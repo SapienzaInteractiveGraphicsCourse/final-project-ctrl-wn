@@ -38,7 +38,7 @@ function generateTextures() {
     petalTexture.encoding = THREE.sRGBEncoding;
 
     windTexture = textureLoader.load('textures/wind.png');
-    windTexture.wrapS = THREE.RepeatWrapping; 
+    windTexture.wrapS = THREE.RepeatWrapping;
     windTexture.wrapT = THREE.ClampToEdgeWrapping;
     windTexture.encoding = THREE.sRGBEncoding;
 }
@@ -235,7 +235,7 @@ function createEnvironment() {
     terrainTexture2.encoding = THREE.sRGBEncoding;
 
     const terrainMat = new THREE.MeshStandardMaterial({
-        color: 0x3b3d30, 
+        color: 0x3b3d30,
         roughness: 1.0,
         metalness: 0.0,
         flatShading: false
@@ -340,24 +340,24 @@ function setupCameraView() {
     const lookDist = 100;
 
     if (STATE.currentCamera === 'turbine-1') {
-        targetPos = { x: -82.55, y: 21.77, z: -82.54 };
-        const dir = { x: 0.66, y: -0.01, z: 0.75 };
+        targetPos = { x: 3.84, y: 10.26, z: 117.86 };
+        const dir = { x: -0.25, y: 0.16, z: -0.95 };
         targetLook = {
             x: targetPos.x + (dir.x * lookDist),
             y: targetPos.y + (dir.y * lookDist),
             z: targetPos.z + (dir.z * lookDist)
         };
     } else if (STATE.currentCamera === 'turbine-2') {
-        targetPos = { x: -28.64, y: 111.89, z: 52.65 };
-        const dir = { x: 0.24, y: -0.92, z: -0.31 };
+        targetPos = { x: 30.62, y: 70.53, z: 8.15 };
+        const dir = { x: -0.51, y: -0.86, z: -0.55 };
         targetLook = {
             x: targetPos.x + (dir.x * lookDist),
             y: targetPos.y + (dir.y * lookDist),
             z: targetPos.z + (dir.z * lookDist)
         };
     } else if (STATE.currentCamera === 'turbine-3') {
-        targetPos = { x: -1.36, y: 48.72, z: 25.68 };
-        const dir = { x: -0.79, y: -0.05, z: -0.61 };
+        targetPos = { x: 2.60, y: 102.48, z: 82.92 };
+        const dir = { x: -0.05, y: -0.81, z: -0.58 };
         targetLook = {
             x: targetPos.x + (dir.x * lookDist),
             y: targetPos.y + (dir.y * lookDist),
@@ -511,7 +511,7 @@ function animate(now) {
     if (grassMesh) {
         grassMesh.material.userData.uTime.value = clock.getElapsedTime();
         grassMesh.material.userData.uBillboard.value = STATE.billboardFactor;
-        grassMesh.material.userData.uSigma.value = STATE.windSigmaThreshold; 
+        grassMesh.material.userData.uSigma.value = STATE.windSigmaThreshold;
     }
 
     if (STATE.showWindVectorField) {
