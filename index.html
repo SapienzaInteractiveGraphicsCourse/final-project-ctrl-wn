@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Wind Farm Simulator</title>
+    <link rel="stylesheet" href="src/style.css">
+    <!-- Three.js and addons loaded via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Tween.js for interpolation transitions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+</head>
+
+<body>
+    <!-- Main 3D canvas container -->
+    <div id="canvas-container"></div>
+
+    <!-- Main HUD panel -->
+    <div id="main-panel">
+
+        <!-- Global toggle to hide/show HUD -->
+        <div id="main-panel-header" class="window-header" style="border-radius: 4px; background: rgba(0,0,0,0.08); padding: 14px 16px;">
+            <h3 style="font-size: 14px;">CONTROL PANEL</h3>
+            <span id="main-toggle-icon" class="toggle-icon">▼</span>
+        </div>
+
+        <!-- Contents container -->
+        <div id="main-panel-content">
+
+            <!-- Logo -->
+            <div class="panel-logo" style="margin-top: 16px;">
+                <img src="textures/logo.png" alt="Breeze & Blades Logo">
+            </div>
+
+            <!-- Wind Controls -->
+            <div class="window-panel">
+                <div class="window-header">
+                    <h3>WIND CONTROL</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="window-content">
+                    <div class="control-group">
+                        <label for="wind-mode">Wind Mode</label>
+                        <select id="wind-mode">
+                            <option value="global">Global (One-way)</option>
+                            <option value="spline">Local (Spline Guided)</option>
+                        </select>
+                    </div>
+
+                    <button id="regen-spline" style="margin-bottom: 15px; width: 100%; background-color: rgba(0, 120, 215, 0.1); border: 1px solid var(--accent-main); color: var(--accent-main); font-weight: bold;">
+                        Regenerate Wind Spline
+                    </button>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="wind-speed">Wind Intensity</label>
+                            <span id="wind-speed-val" class="badge">40%</span>
+                        </div>
+                        <input type="range" id="wind-speed" min="0" max="100" value="40">
+                    </div>
+
+                    <div class="control-group checkbox-group">
+                        <input type="checkbox" id="show-wind-vectors">
+                        <label for="show-wind-vectors">Show Wind Vectors</label>
+                    </div>
+
+                    <div class="control-group checkbox-group">
+                        <input type="checkbox" id="show-spline" checked>
+                        <label for="show-spline">Show Wind Path</label>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="wind-threshold">Influence Threshold (Spline)</label>
+                            <span id="wind-threshold-val" class="badge">35 m</span>
+                        </div>
+                        <input type="range" id="wind-threshold" min="5" max="100" step="5" value="35">
+                    </div>
+
+                    <!-- Compass widget for Global wind direction -->
+                    <div class="control-group" id="compass-group">
+                        <label>Global Wind Direction</label>
+                        <div class="compass-wrapper">
+                            <div id="compass" class="compass">
+                                <img src="textures/bussola.png" class="compass-base" alt="Compass">
+                                <img src="textures/freccia.png" class="compass-arrow" alt="Arrow">
+                            </div>
+                        </div>
+                        <p class="help-text">Click and drag compass to change direction.</p>
+                    </div>
+
+                    <button id="mute-button"
+                            style="margin-top: 15px; width: 100%; padding: 10px; cursor: pointer; background-color: rgba(0, 0, 0, 0.05); color: #111111; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 6px; font-weight: bold;"
+                            onmouseover="this.style.backgroundColor='rgba(0, 0, 0, 0.08)'"
+                            onmouseout="if(!STATE.isMuted) this.style.backgroundColor='rgba(0, 0, 0, 0.05)'">
+                        Audio Enabled
+                    </button>
+                </div>
+            </div>
+
+            <!-- Day and Night settings -->
+            <div class="window-panel">
+                <div class="window-header">
+                    <h3>DAY AND NIGHT</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="window-content">
+                    <div class="control-group">
+                        <div class="slider-header">
+                            <label for="time-of-day">Time of Day</label>
+                            <span id="time-of-day-val" class="badge">12:00</span>
+                        </div>
+                        <input type="range" id="time-of-day" min="0" max="24" step="0.1" value="12">
+                    </div>
+
+                    <div class="control-group checkbox-group">
+                        <input type="checkbox" id="auto-time" checked>
+                        <label for="auto-time">Auto Time Cycle</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera settings -->
+            <div class="window-panel">
+                <div class="window-header">
+                    <h3>CAMERA</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="window-content">
+                    <div class="camera-buttons">
+                        <button id="cam-orbit" class="active">Free Orbit</button>
+                        <button id="cam-turbine-1">Fixed View 1</button>
+                        <button id="cam-turbine-2">Fixed View 2</button>
+                        <button id="cam-turbine-3">Fixed View 3</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vector Field Legend -->
+            <div class="window-panel" id="wind-legend" style="display: none;">
+                <div class="window-header">
+                    <h3>VECTOR FIELD</h3>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <div class="window-content">
+                    <p class="help-text" style="margin-bottom: 12px;">Press <strong>F</strong> to toggle vector field</p>
+                    <div class="legend-grid">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #0000ff;"></div>
+                            <span class="legend-label">Weak (0%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #00aa00;"></div>
+                            <span class="legend-label">Medium (50%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ffff00;"></div>
+                            <span class="legend-label">Strong (75%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ff0000;"></div>
+                            <span class="legend-label">Maximum (100%)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Performance and Camera coordinates stats overlay -->
+    <div id="perf-overlay">
+        <div id="fps-counter">FPS: --</div>
+        <div id="camera-info" style="margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px; line-height: 1.5; color: #a1d1ff;">
+            Pos: X:0.00 Y:0.00 Z:0.00<br>
+            Dir: X:0.00 Y:0.00 Z:0.00
+        </div>
+    </div>
+
+    <!-- Application scripts loaded in sequential dependency order -->
+    <script src="src/config.js"></script>
+    <script src="src/ui.js"></script>
+    <script src="src/terrain.js"></script>
+    <script src="src/wind.js"></script>
+    <script src="src/turbines.js"></script>
+    <script src="src/grass.js"></script>
+    <script src="src/app.js"></script>
+</body>
+
+</html>
