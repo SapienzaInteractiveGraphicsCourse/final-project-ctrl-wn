@@ -1,4 +1,4 @@
-# 🌬️ WindWeaver
+# WindWeaver
 
 ![WindWeaver Screenshot](images/logo - Copia.png)
 *A procedural 3D wind farm simulator built with Three.js.*
