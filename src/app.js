@@ -452,7 +452,7 @@ function setupCameraView() {
         .easing(TWEEN.Easing.Cubic.Out)
         .start();
 
-    // Ricalcola lo spettro audio non appena la transizione di vista ha inizio
+
     updateWindAudio();
 }
 

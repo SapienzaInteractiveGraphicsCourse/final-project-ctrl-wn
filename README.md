@@ -1,19 +1,19 @@
 # WindWeaver
+![WindWeaver Gameplay](images/preview.gif)
 
-![WindWeaver Screenshot](images/logo.png)
-*A procedural 3D wind farm simulator built with Three.js.*
+*A 3D wind farm simulator built with Three.js.*
 
-**Play the interactive demo here:** [(https://sapienzainteractivegraphicscourse.github.io/final-project-ctrl-wn/) \]]
+**Play the demo here:** [(https://sapienzainteractivegraphicscourse.github.io/final-project-ctrl-wn/) \]]
 
 WindWeaver is an interactive 3D WebGL simulator of a wind farm. It features hierarchical turbine models, a custom GPU-instanced grass shader, dynamic day/night lighting cycles, and a custom wind simulation that can toggle between global unidirectional flow and local flow guided by 3D Catmull-Rom splines.
 
 Developed for the **Interactive Graphics Course** at **Sapienza University of Rome** by JOSE' RAUL NICOLAS PALACIO and WALTER ENRICO BRUTI.
 
 ---
+![WindWeaver Screenshot](images/logo.png)
 
 
 
-![WindWeaver Gameplay](images/preview.gif)
 
 ---
 
@@ -22,12 +22,12 @@ Developed for the **Interactive Graphics Course** at **Sapienza University of Ro
 ![Keymap Commands](images/instruction.png)
 *(Above: Keyboard and Mouse interaction layout)*
 
-### 🖱️ Mouse & Keyboard Controls
+### Mouse & Keyboard Controls
 *   **Left Click + Drag**: Rotate the camera 360°.
 *   **Mouse Wheel Scroll**: Move the camera forward/backward along the viewing direction.
 *   **`F` Key**: Toggle the **Wind Vector Field** debug view on and off.
 
-### 🎛️ UI Control Panel
+### UI Control Panel
 The HUD on the left side of the screen allows you to tweak the simulation in real-time:
 
 *   **Wind Control:**
