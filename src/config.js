@@ -1,5 +1,5 @@
 // Global variables and configuration state
-let audioListener, windSound;
+let audioListener, windSound, grassSound, turbineSound;
 
 const gltfLoader = new THREE.GLTFLoader();
 const textureLoader = new THREE.TextureLoader();
@@ -121,7 +121,7 @@ const STATE = {
     lastVectorUpdateTime: 0,
     windSigmaThreshold: 35,
     isMuted: false,
-    billboardFactor: 0.0  
+    billboardFactor: 0.0
 };
 
 const windVectorGlobal = new THREE.Vector3(0, 0, -1);
@@ -130,9 +130,9 @@ const windVectorGlobal = new THREE.Vector3(0, 0, -1);
 let scene, camera, renderer, controls;
 let terrain, grassMesh, grassGeo, splinePath, splineHelper;
 let windLeaves = [];
-let windTrails = []; 
+let windTrails = [];
 let turbines = [];
 let sunLight, hemiLight;
-let leafTexture, petalTexture, flowerTexture, windTexture; 
+let leafTexture, petalTexture, flowerTexture, windTexture;
 let clock = new THREE.Clock();
 let skyboxMesh, skyboxMat;

@@ -102,24 +102,98 @@ function initGraphics() {
     camera.add(audioListener);
 
     windSound = new THREE.Audio(audioListener);
+    grassSound = new THREE.Audio(audioListener);
+    turbineSound = new THREE.Audio(audioListener);
+
     const audioLoader = new THREE.AudioLoader();
 
+    // Loading file audio
     audioLoader.load('sounds/wind.mp3', (buffer) => {
         windSound.setBuffer(buffer);
         windSound.setLoop(true);
-        windSound.setVolume(STATE.windSpeed / 100);
+        updateWindAudio();
     });
+
+    audioLoader.load('sounds/grass.mp3', (buffer) => {
+        grassSound.setBuffer(buffer);
+        grassSound.setLoop(true);
+        updateWindAudio();
+    });
+
+    audioLoader.load('sounds/turbine.mp3', (buffer) => {
+        turbineSound.setBuffer(buffer);
+        turbineSound.setLoop(true);
+        updateWindAudio();
+    });
+
+    // serve a sbloccare il contesto audio al primo clic dell'utente (cioè bypassare restrizioni browser) DA TRADURRE IN INGLESE
+    window.addEventListener('click', () => {
+        if (audioListener && audioListener.context && audioListener.context.state === 'suspended') {
+            audioListener.context.resume().then(() => {
+                updateWindAudio();
+            });
+        }
+    }, { once: true });
 }
 
+//u update audio, increase volume, pitch, speed 
 function updateWindAudio() {
+    const speedFactor = STATE.windSpeed / 100;
+
+    // Se l'applicazione è mutata, azzera tutti i volumi
+    if (STATE.isMuted) {
+        if (windSound && windSound.buffer) windSound.setVolume(0);
+        if (grassSound && grassSound.buffer) grassSound.setVolume(0);
+        if (turbineSound && turbineSound.buffer) turbineSound.setVolume(0);
+        return;
+    }
+
+    // WIND SOUND (sempre attivo di default) DA tradurre
     if (windSound && windSound.buffer) {
-        if (STATE.isMuted) {
-            windSound.setVolume(0);
+        if (!windSound.isPlaying) {
+            windSound.play();
+        }
+        const windVolume = STATE.windSpeed === 0 ? 0.05 : 0.1 + (speedFactor * 0.9);
+        windSound.setVolume(windVolume);
+
+        const windPitch = 0.7 + (speedFactor * 0.8);
+        windSound.setPlaybackRate(windPitch);
+    }
+
+    // GRASS SOUND --
+    if (grassSound && grassSound.buffer) {
+        if (!grassSound.isPlaying) {
+            grassSound.play();
+        }
+        if (STATE.currentCamera === 'turbine-1') {
+            const grassVolume = STATE.windSpeed === 0 ? 0.05 : 0.1 + (speedFactor * 0.9);
+            grassSound.setVolume(grassVolume);
+
+            const grassPitch = 0.7 + (speedFactor * 0.8);
+            grassSound.setPlaybackRate(grassPitch);
         } else {
-            const volume = STATE.windSpeed / 100;
-            windSound.setVolume(volume);
-            const pitch = 0.8 + (volume * 0.7);
-            windSound.setPlaybackRate(pitch);
+            grassSound.setVolume(0);
+        }
+    }
+
+    // TURBINE SOUND
+    if (turbineSound && turbineSound.buffer) {
+        if (!turbineSound.isPlaying) {
+            turbineSound.play();
+        }
+        if (STATE.currentCamera === 'turbine-2') {
+            // Controllo per le pale se sono bloccate
+            let turbineActiveFactor = speedFactor;
+            if (STATE.windSpeed < 10 || STATE.windSpeed > 90) {
+                turbineActiveFactor = 0.05;
+            }
+            const turbineVolume = STATE.windSpeed === 0 ? 0 : 0.05 + (turbineActiveFactor * 0.85);
+            turbineSound.setVolume(turbineVolume);
+
+            const turbinePitch = 0.6 + (turbineActiveFactor * 0.7);
+            turbineSound.setPlaybackRate(turbinePitch);
+        } else {
+            turbineSound.setVolume(0);
         }
     }
 }
@@ -377,6 +451,9 @@ function setupCameraView() {
         .to(targetLook, tweenDuration)
         .easing(TWEEN.Easing.Cubic.Out)
         .start();
+
+    // Ricalcola lo spettro audio non appena la transizione di vista ha inizio
+    updateWindAudio();
 }
 
 // Global day/night interpolation
