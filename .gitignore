@@ -19,3 +19,8 @@ npm-debug.log*
 # Local Server Temp Files
 .http-server/
 *.log
+
+
+# Server scripts
+start_server
+start_server.bat

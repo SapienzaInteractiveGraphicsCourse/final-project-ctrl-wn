@@ -1,6 +1,6 @@
 # WindWeaver
 
-![WindWeaver Screenshot](images/logo - Copia.png)
+![WindWeaver Screenshot](images/logo.png)
 *A procedural 3D wind farm simulator built with Three.js.*
 
 **Play the interactive demo here:** [(https://sapienzainteractivegraphicscourse.github.io/final-project-ctrl-wn/) \]]
@@ -11,7 +11,7 @@ Developed for the **Interactive Graphics Course** at **Sapienza University of Ro
 
 ---
 
-## 🎥 Showcase
+
 
 ![WindWeaver Gameplay](images/preview.gif)
 
@@ -50,18 +50,18 @@ The HUD on the left side of the screen allows you to tweak the simulation in rea
 
 This project was built from scratch using pure **Three.js** (WebGL wrapper) and fully satisfies the course requirements.
 
-### 1. Hierarchical Models & Procedural Animation
-Animations are **not imported** from 3D software. The turbine models (`.glb`) are loaded, traversed, and their hierarchy (Tower -> Hub -> Rotor) is rebuilt via code. 
+### Hierarchical Models & Procedural Animation
+The turbine models (`.glb`) are loaded, traversed, and their hierarchy (Tower -> Hub -> Rotor) is rebuilt via code. 
 *   **Rotors** spin based on the calculated aerodynamic force of the wind speed.
 *   **Towers** (Yaw mechanism) smoothly rotate over time to align the hub with the current wind direction.
 *   **Camera Animations** are implemented using `tween.js` for smooth cubic interpolation between viewpoints.
 
-### 2. Lights, Textures & Materials
+### Lights, Textures & Materials
 The scene utilizes a Physically Based Rendering (PBR) pipeline.
 *   **Textures**: Complex materials use Diffuse (Albedo), Normal, Roughness, and Metalness maps. 
 *   **Lighting**: A `DirectionalLight` acts as the Sun (casting soft PCF shadows), paired with a `HemisphereLight`. A custom `ShaderMaterial` is used on the Skybox to smoothly blend between Day, Sunset, and Night cubemaps based on the time variable. Red blinking `PointLights` are dynamically activated on turbines during the night cycle.
 
-### 3. Custom Shaders & Optimization
+### Custom Shaders & Optimization
 *   **GPU Instancing**: The terrain is populated by 25,000 grass blades and flowers using `THREE.InstancedMesh` for maximum performance.
 *   **Vertex Displacement**: The grass material's vertex shader was heavily customized to calculate wind bending and wave distortion on the GPU. Grass blades automatically orient themselves towards the camera (Billboard effect) using a custom rotation matrix injected into the shader.
 
