@@ -703,13 +703,16 @@ function animate(now) {
 
 // Slice cross skybox textures into faces
 function loadCubeTextureFromCross(url, callback) {
+    // Signal the manager to start loading this custom resource
+    if (typeof loadingManager !== 'undefined') {
+        loadingManager.itemStart(url);
+    }
     const img = new Image();
     img.src = url;
     img.onload = () => {
         const w = img.width;
         const faceSize = w / 4;
         const canvases = [];
-
         const faceCoords = [
             { x: 2, y: 1 },
             { x: 0, y: 1 },
@@ -718,7 +721,6 @@ function loadCubeTextureFromCross(url, callback) {
             { x: 1, y: 1 },
             { x: 3, y: 1 }
         ];
-
         for (let i = 0; i < 6; i++) {
             const canvas = document.createElement('canvas');
             canvas.width = faceSize;
@@ -732,12 +734,21 @@ function loadCubeTextureFromCross(url, callback) {
             );
             canvases.push(canvas);
         }
-
         const cubeTex = new THREE.CubeTexture(canvases);
         cubeTex.needsUpdate = true;
-
         if (callback) {
             callback(cubeTex);
+        }
+        // Report to the manager when this resource has finished loading.
+        if (typeof loadingManager !== 'undefined') {
+            loadingManager.itemEnd(url);
+        }
+    };
+    img.onerror = () => {
+        console.warn("Unable to load skybox texture: " + url);
+        // Report end on error anyway to avoid permanent loading block
+        if (typeof loadingManager !== 'undefined') {
+            loadingManager.itemEnd(url);
         }
     };
 }
