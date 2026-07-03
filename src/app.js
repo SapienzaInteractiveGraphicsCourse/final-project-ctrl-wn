@@ -105,7 +105,7 @@ function initGraphics() {
     grassSound = new THREE.Audio(audioListener);
     turbineSound = new THREE.Audio(audioListener);
 
-    const audioLoader = new THREE.AudioLoader();
+    const audioLoader = new THREE.AudioLoader(loadingManager);
 
     // Loading file audio
     audioLoader.load('sounds/wind.mp3', (buffer) => {
@@ -126,7 +126,7 @@ function initGraphics() {
         updateWindAudio();
     });
 
-    // serve a sbloccare il contesto audio al primo clic dell'utente (cioè bypassare restrizioni browser) DA TRADURRE IN INGLESE
+    // It is used to unlock the audio context on the user's first click (i.e. bypass browser restrictions)
     window.addEventListener('click', () => {
         if (audioListener && audioListener.context && audioListener.context.state === 'suspended') {
             audioListener.context.resume().then(() => {
@@ -136,11 +136,11 @@ function initGraphics() {
     }, { once: true });
 }
 
-//u update audio, increase volume, pitch, speed 
+// update audio, increase volume, pitch, speed 
 function updateWindAudio() {
     const speedFactor = STATE.windSpeed / 100;
 
-    // Se l'applicazione è mutata, azzera tutti i volumi
+    // If the application has changed, reset all volumes
     if (STATE.isMuted) {
         if (windSound && windSound.buffer) windSound.setVolume(0);
         if (grassSound && grassSound.buffer) grassSound.setVolume(0);
@@ -148,7 +148,7 @@ function updateWindAudio() {
         return;
     }
 
-    // WIND SOUND (sempre attivo di default) DA tradurre
+    // WIND SOUND (always active by default) TO translate
     if (windSound && windSound.buffer) {
         if (!windSound.isPlaying) {
             windSound.play();
@@ -182,7 +182,7 @@ function updateWindAudio() {
             turbineSound.play();
         }
         if (STATE.currentCamera === 'turbine-2') {
-            // Controllo per le pale se sono bloccate
+            // Check for blades if they are blocked
             let turbineActiveFactor = speedFactor;
             if (STATE.windSpeed < 10 || STATE.windSpeed > 90) {
                 turbineActiveFactor = 0.05;

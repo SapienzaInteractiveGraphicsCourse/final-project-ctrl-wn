@@ -1,8 +1,58 @@
 // Global variables and configuration state
 let audioListener, windSound, grassSound, turbineSound;
 
-const gltfLoader = new THREE.GLTFLoader();
-const textureLoader = new THREE.TextureLoader();
+// initializing global LoadingManager
+const loadingManager = new THREE.LoadingManager();
+
+// if loading time > 10s, automatic unlock of the scene
+const loadingTimeout = setTimeout(() => {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen && !loadingScreen.classList.contains('fade-out')) {
+        console.warn('too much time used: automatic unlock of the scene.');
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 800);
+    }
+}, 10000);
+
+loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
+    // possible strarting log
+};
+
+loadingManager.onLoad = function () {
+    clearTimeout(loadingTimeout); 
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 800); 
+    }
+};
+
+loadingManager.onProgress = function (url, itemsLoaded, itemsTotal) {
+    const percent = Math.round((itemsLoaded / itemsTotal) * 100);
+    const progressBar = document.getElementById('loader-bar');
+    const percentText = document.getElementById('loader-percentage');
+    const statusText = document.getElementById('loader-status');
+
+    if (progressBar) progressBar.style.width = percent + '%';
+    if (percentText) percentText.innerText = percent + '%';
+
+    if (statusText) {
+        // show file names from url
+        const filename = url.substring(url.lastIndexOf('/') + 1);
+        statusText.innerText = `loading of ${filename}...`;
+    }
+};
+
+loadingManager.onError = function (url) {
+    console.warn('Error during the loading of the resource: ' + url);
+};
+
+const gltfLoader = new THREE.GLTFLoader(loadingManager);
+const textureLoader = new THREE.TextureLoader(loadingManager);
 
 // Turbine textures configuration
 const turbineTextures = {

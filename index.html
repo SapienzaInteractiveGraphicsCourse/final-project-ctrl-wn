@@ -15,6 +15,26 @@
 </head>
 
 <body>
+
+    <!-- Initial loading screen -->
+    <div id="loading-screen">
+        <div class="loader-container">
+            <!-- Logo loading -->
+            <img src="textures/logo.png" alt="Loading Logo" class="loader-logo">
+
+            <!-- loading bar -->
+            <div class="loader-bar-wrapper">
+                <div id="loader-bar"></div>
+            </div>
+
+            <!-- info and percentage -->
+            <div class="loader-info">
+                <span id="loader-percentage">0%</span>
+                <span id="loader-status">Resources initialization...</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Main 3D canvas container -->
     <div id="canvas-container"></div>
 

@@ -48,7 +48,7 @@ header .subtitle {
     margin-top: 4px;
 }
 
-/* --- CONTENITORE PRINCIPALE (HUD GLOBALE) --- */
+/* --- MAIN CONTAINER (GLOBAL HUD) --- */
 #main-panel {
     position: absolute;
     top: 24px;
@@ -59,7 +59,7 @@ header .subtitle {
     flex-direction: column;
     gap: 8px;
     z-index: 10;
-    /* Sfondo crema scelto */
+    /* cream colored background chosen */
     background: var(--bg-glass);
     border: 1px solid var(--border-glass);
     border-radius: 4px;
@@ -79,15 +79,15 @@ header .subtitle {
         border-radius: 3px;
     }
 
-/* --- GESTIONE CONTENUTO GLOBALE --- */
+/* --- GLOBAL CONTENT MANAGEMENT --- */
 #main-panel-content {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Mantiene lo spazio tra logo e finestre */
+    gap: 8px; /* Maintains space between logo and windows */
 }
 
     #main-panel-content.hidden {
-        display: none; /* Nasconde tutto l'HUD istantaneamente */
+        display: none; /* Hides the entire HUD */
     }
 
 /* --- LOGO --- */
@@ -108,9 +108,9 @@ header .subtitle {
         pointer-events: none;
     }
 
-/* --- SINGOLI MENU A TENDINA --- */
+/* --- SINGLE DROP-DOWN MENUS --- */
 .window-panel {
-    background: rgba(0, 0, 0, 0.03); /* Leggermente più scuro del crema per creare stacco */
+    background: rgba(0, 0, 0, 0.03); /* Slightly darker than the cream to create a contrast */
     border: 1px solid var(--border-glass);
     border-radius: 2px;
     display: flex;
@@ -174,7 +174,7 @@ header .subtitle {
 
 select {
     width: 100%;
-    background: rgba(0, 0, 0, 0.03); /* Sfondo chiaro per le tendine */
+    background: rgba(0, 0, 0, 0.03); /* Light background for curtains */
     border: 1px solid var(--border-glass);
     border-radius: 6px;
     padding: 8px 12px;
@@ -204,7 +204,7 @@ select {
 }
 
 .badge {
-    background: rgba(0, 0, 0, 0.08); /* Sfondo badge scuro leggero */
+    background: rgba(0, 0, 0, 0.08); /* Light dark badge background */
     color: var(--text-primary);
     padding: 2px 8px;
     border-radius: 4px;
@@ -217,7 +217,7 @@ input[type="range"] {
     width: 100%;
     height: 4px;
     border-radius: 2px;
-    background: rgba(0, 0, 0, 0.15); /* Binario grigio */
+    background: rgba(0, 0, 0, 0.15); /* Gray track */
     outline: none;
     cursor: pointer;
 }
@@ -256,7 +256,7 @@ input[type="range"] {
         font-size: 13px;
     }
 
-/* Bussola Interattiva */
+/* Interactive Compass */
 .compass-wrapper {
     display: flex;
     justify-content: center;
@@ -293,7 +293,7 @@ input[type="range"] {
     transition: transform 0.1s ease-out;
 }
 
-/* Telecamere */
+/* cams */
 .camera-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -301,7 +301,7 @@ input[type="range"] {
 }
 
 button {
-    background: rgba(0, 0, 0, 0.05); /* Bottoni chiari in tema light */
+    background: rgba(0, 0, 0, 0.05); /* Light buttons that use light theme */
     border: 1px solid var(--border-glass);
     color: var(--text-primary);
     padding: 8px;
@@ -320,7 +320,7 @@ button {
     button.active {
         background: var(--accent-main);
         border-color: var(--accent-main);
-        color: #ffffff; /* Il testo sul blu resta bianco */
+        color: #ffffff; 
     }
 
 .help-text {
@@ -329,7 +329,7 @@ button {
     line-height: 1.5;
 }
 
-/* Leggenda Campo Vettoriale */
+/* Leggenda Vector Field */
 #wind-legend {
     margin-top: 8px;
 }
@@ -386,4 +386,81 @@ button {
     font-size: 12px;
     color: #a1d1ff;
     pointer-events: none;
+}
+
+
+
+
+/* --- LOADING SCREEN --- */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-glass);
+    z-index: 9999; /* the image will be the first to see */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+    opacity: 1;
+    visibility: visible;
+}
+
+    /* dissolvence with loading complete */
+    #loading-screen.fade-out {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.loader-logo {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 8px;
+}
+
+.loader-bar-wrapper {
+    width: 100%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border-glass);
+}
+
+#loader-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--accent-main, #0078D7);
+    border-radius: 3px;
+    transition: width 0.3s ease-out;
+}
+
+.loader-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-family: var(--font-main, Arial, sans-serif);
+    font-size: 13px;
+}
+
+#loader-percentage {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+#loader-status {
+    color: var(--text-secondary);
 }
