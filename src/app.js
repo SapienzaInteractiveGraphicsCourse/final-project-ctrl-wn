@@ -422,8 +422,8 @@ function setupCameraView() {
             z: targetPos.z + (dir.z * lookDist)
         };
     } else if (STATE.currentCamera === 'turbine-2') {
-        targetPos = { x: 30.62, y: 70.53, z: 8.15 };
-        const dir = { x: -0.51, y: -0.86, z: -0.55 };
+        targetPos = { x: 60.62, y: 85.53, z: 30.15 };
+        const dir = { x: -0.51, y: -0.86, z: -0.25 };
         targetLook = {
             x: targetPos.x + (dir.x * lookDist),
             y: targetPos.y + (dir.y * lookDist),

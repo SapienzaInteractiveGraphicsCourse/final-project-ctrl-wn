@@ -248,18 +248,22 @@ function createTurbines() {
     turbines = [];
     
     // Modern turbines
-    turbines.push(new WindTurbine(20, 0, 0.3));
-    turbines.push(new WindTurbine(-10, -30, 0.3));
-    turbines.push(new WindTurbine(-40, -60, 0.3));
-    turbines.push(new WindTurbine(20, 50, 0.3));
-    turbines.push(new WindTurbine(-10, 20, 0.3));
+    turbines.push(new WindTurbine(40, 25, 0.3));
+    turbines.push(new WindTurbine(100, -30, 0.3));
+    turbines.push(new WindTurbine(-100, -60, 0.3));
+    turbines.push(new WindTurbine(0, 75, 0.3));
+    turbines.push(new WindTurbine(-100, 100, 0.3));
     turbines.push(new WindTurbine(-40, -10, 0.3));
+    turbines.push(new WindTurbine(100, 100, 0.3));
     
     // Old windmills
-    turbines.push(new OldWindmill(-60, 20, 0.1));
-    turbines.push(new OldWindmill(-30, 60, 0.1));
+    turbines.push(new OldWindmill(-100, -110, 0.1));
+    turbines.push(new OldWindmill(-80, 30, 0.1));
+    turbines.push(new OldWindmill(-30, -50, 0.1));
     turbines.push(new OldWindmill(60, 0, 0.1));
-    turbines.push(new OldWindmill(-15, -60, 0.1));
-    turbines.push(new OldWindmill(30, -60, 0.1));
-    turbines.push(new OldWindmill(-60, -60, 0.1));
+    turbines.push(new OldWindmill(30, -80, 0.1));
+    turbines.push(new OldWindmill(10,30, 0.1));
+    turbines.push(new OldWindmill(45, 80, 0.1));
+    turbines.push(new OldWindmill(80, 40, 0.1));
+    turbines.push(new OldWindmill(-20, 110, 0.1));
 }
