@@ -167,8 +167,8 @@ function createWindVectorField() {
 
     STATE.vectorArrowGroup = new THREE.Group();
 
-    const gridCols = 7;
-    const gridRows = 6;
+    const gridCols = 16;
+    const gridRows = 14;
     const range = 180;
     const spacingX = (range * 2) / (gridCols - 1);
     const spacingZ = (range * 2) / (gridRows - 1);
