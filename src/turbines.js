@@ -19,10 +19,19 @@ class WindTurbine {
         this.rotor = null;
 
         // Obstacle warning light (red blinking beacon)
-        this.beaconLightMat = new THREE.MeshBasicMaterial({ color: 0x330000 });
-        const beaconGeo = new THREE.SphereGeometry(0.5, 8, 8);
-        this.beaconMesh = new THREE.Mesh(beaconGeo, this.beaconLightMat);
-        this.beaconPointLight = new THREE.PointLight(0xff0000, 0, 15);
+        //this.beaconLightMat = new THREE.MeshBasicMaterial({ color: 0x330000 });
+        this.beaconLightMat = new THREE.MeshStandardMaterial({
+            color: 0x550000,      
+            emissive: 0x000000, 
+            roughness: 0.3,  
+            metalness: 0.1  
+        });
+        const beaconGeo = new THREE.SphereGeometry(0.25, 8, 8);
+        this.beaconMesh1 = new THREE.Mesh(beaconGeo, this.beaconLightMat);
+        this.beaconPointLight1 = new THREE.PointLight(0xff0000, 0, 15);
+
+        this.beaconMesh2 = new THREE.Mesh(beaconGeo, this.beaconLightMat);
+        this.beaconPointLight2 = new THREE.PointLight(0xff0000, 0, 15);
 
         gltfLoader.load(
             'models/modello_turbina_final_v3.glb',
@@ -63,10 +72,16 @@ class WindTurbine {
                 }
 
                 if (this.hub) {
-                    this.beaconMesh.position.set(0, 5, -3);
-                    this.beaconPointLight.position.set(0, 5.5, -3);
-                    this.hub.add(this.beaconMesh);
-                    this.hub.add(this.beaconPointLight);
+                    this.beaconMesh1.position.set(5.03, 13, -13.54); //height was 12.95
+                    this.beaconPointLight1.position.set(5.03, 13.5, -13.54); //height was 13.45
+
+                    this.beaconMesh2.position.set(-5.03, 13, -13.54); //height was 12.95
+                    this.beaconPointLight2.position.set(-5.03, 13.5, -13.54); //height was 13.45
+
+                    this.hub.add(this.beaconMesh1);
+                    this.hub.add(this.beaconPointLight1);
+                    this.hub.add(this.beaconMesh2);
+                    this.hub.add(this.beaconPointLight2);
                 }
 
                 this.group.add(model);
@@ -125,13 +140,41 @@ class WindTurbine {
         const timeFactor = clock.getElapsedTime() * 2.5;
         const isNight = STATE.timeOfDay < 5.5 || STATE.timeOfDay > 18.5;
 
+        /*
         if (isNight) {
             const intensity = (Math.sin(timeFactor) > 0.5) ? 1.0 : 0.0;
             this.beaconLightMat.color.setHex(intensity > 0.5 ? 0xff0000 : 0x220000);
-            this.beaconPointLight.intensity = intensity * 2.5;
+            this.beaconPointLight1.intensity = intensity * 2.5;
+            this.beaconPointLight2.intensity = intensity * 2.5;
         } else {
             this.beaconLightMat.color.setHex(0x330000);
-            this.beaconPointLight.intensity = 0;
+            this.beaconPointLight1.intensity = 0;
+            this.beaconPointLight2.intensity = 0;
+        }
+        */
+       /*
+        if (isNight) {
+            const intensity = (Math.sin(timeFactor) > 0.5) ? 1.0 : 0.0;
+            this.beaconLightMat.emissive.setHex(intensity > 0.5 ? 0xff0000 : 0x000000);
+            this.beaconPointLight1.intensity = intensity * 2.5;
+            this.beaconPointLight2.intensity = intensity * 2.5;
+        } else {
+            this.beaconLightMat.emissive.setHex(0x000000);
+            this.beaconPointLight1.intensity = 0;
+            this.beaconPointLight2.intensity = 0;
+        }
+        */
+        if (isNight) {
+            const isLit = Math.sin(timeFactor) > 0.5;
+            this.beaconLightMat.color.setHex(isLit ? 0x000000 : 0x550000);
+            this.beaconLightMat.emissive.setHex(isLit ? 0xff0000 : 0x000000);
+            this.beaconPointLight1.intensity = isLit ? 2.5 : 0.0;
+            this.beaconPointLight2.intensity = isLit ? 2.5 : 0.0;
+        } else {
+            this.beaconLightMat.color.setHex(0x550000);
+            this.beaconLightMat.emissive.setHex(0x000000);
+            this.beaconPointLight1.intensity = 0;
+            this.beaconPointLight2.intensity = 0;
         }
     }
 }
