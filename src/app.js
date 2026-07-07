@@ -422,8 +422,8 @@ function setupCameraView() {
             z: targetPos.z + (dir.z * lookDist)
         };
     } else if (STATE.currentCamera === 'turbine-2') {
-        targetPos = { x: 60.62, y: 85.53, z: 30.15 };
-        const dir = { x: -0.51, y: -0.86, z: -0.25 };
+        targetPos = { x: -6.11, y: 57.59, z: 79.65 };
+        const dir = { x: 0.45, y: -0.30, z: -0.84 };
         targetLook = {
             x: targetPos.x + (dir.x * lookDist),
             y: targetPos.y + (dir.y * lookDist),
@@ -437,7 +437,31 @@ function setupCameraView() {
             y: targetPos.y + (dir.y * lookDist),
             z: targetPos.z + (dir.z * lookDist)
         };
-    } else if (STATE.currentCamera === 'orbit') {
+
+        //Setup configuration fixed view 3, disable auto time cycle and set to 12:00, enable wind vector field and spline, set wind mode to spline
+
+        STATE.autoTime = false;
+        if (UI.elements.autoTimeCheck) {
+            UI.elements.autoTimeCheck.checked = false;
+        }
+
+        STATE.timeOfDay = 12.0;
+        UI.syncTimeSlider(12.0);
+        UI.updateTimeValueText(12.0);
+
+        if (!STATE.showWindVectorField) {
+            toggleWindVectorField();
+        }
+
+        STATE.showSpline = true;
+        if (UI.elements.splineCheck) {
+            UI.elements.splineCheck.checked = true;
+        }
+        if (typeof splineHelper !== 'undefined' && splineHelper) {
+            splineHelper.visible = STATE.showSpline && STATE.windMode === 'spline';
+        }
+    }
+    else if (STATE.currentCamera === 'orbit') {
         targetPos = { x: 0, y: 40, z: 100 };
         targetLook = { x: 0, y: 39.971, z: 99.904 };
     }
