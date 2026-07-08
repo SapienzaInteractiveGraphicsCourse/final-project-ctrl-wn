@@ -36,7 +36,7 @@ const UI = {
         this.setupKeyboardShortcuts();
         this.setupRegenSplineListener();
         this.setupAccordions();
-        this.setupGlobalToggle(); 
+        this.setupGlobalToggle();
     },
 
     // Collapsible accordion panels
@@ -117,7 +117,7 @@ const UI = {
             STATE.windSpeed = parseInt(e.target.value);
 
             if (windSound && !windSound.isPlaying) {
-                windSound.play(); 
+                windSound.play();
             }
             updateWindAudio();
 
@@ -356,7 +356,7 @@ const UI = {
             this.elements.timeSlider.value = timeOfDay;
         }
     },
-    
+
     syncShowWindVectors(checked) {
         if (this.elements.windVectorsCheck) {
             this.elements.windVectorsCheck.checked = checked;

@@ -1,5 +1,6 @@
 // Global variables and configuration state
 let audioListener, windSound, grassSound, turbineSound;
+let beaconGlowTexture;
 
 // initializing global LoadingManager
 const loadingManager = new THREE.LoadingManager();
@@ -21,13 +22,13 @@ loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
 };
 
 loadingManager.onLoad = function () {
-    clearTimeout(loadingTimeout); 
+    clearTimeout(loadingTimeout);
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
         loadingScreen.classList.add('fade-out');
         setTimeout(() => {
             loadingScreen.style.display = 'none';
-        }, 800); 
+        }, 800);
     }
 };
 

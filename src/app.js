@@ -41,6 +41,8 @@ function generateTextures() {
     windTexture.wrapS = THREE.RepeatWrapping;
     windTexture.wrapT = THREE.ClampToEdgeWrapping;
     windTexture.encoding = THREE.sRGBEncoding;
+    beaconGlowTexture = textureLoader.load('textures/glow.png');
+
 }
 
 // Setup Three.js WebGL renderer, OrbitControls and Audio

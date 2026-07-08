@@ -21,10 +21,10 @@ class WindTurbine {
         // Obstacle warning light (red blinking beacon)
         //this.beaconLightMat = new THREE.MeshBasicMaterial({ color: 0x330000 });
         this.beaconLightMat = new THREE.MeshStandardMaterial({
-            color: 0x550000,      
-            emissive: 0x000000, 
-            roughness: 0.3,  
-            metalness: 0.1  
+            color: 0x550000,
+            emissive: 0x000000,
+            roughness: 0.3,
+            metalness: 0.1
         });
         const beaconGeo = new THREE.SphereGeometry(0.25, 8, 8);
         this.beaconMesh1 = new THREE.Mesh(beaconGeo, this.beaconLightMat);
@@ -32,6 +32,28 @@ class WindTurbine {
 
         this.beaconMesh2 = new THREE.Mesh(beaconGeo, this.beaconLightMat);
         this.beaconPointLight2 = new THREE.PointLight(0xff0000, 0, 15);
+
+        this.beaconPointLight2 = new THREE.PointLight(0xff0000, 0, 15);
+
+        // Glow Effect
+        const glowSize = 3.0;
+        const glowMaterial = new THREE.SpriteMaterial
+            (
+                {
+                    map: beaconGlowTexture,
+                    color: 0xff0000,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+
+        this.glowSprite1 = new THREE.Sprite(glowMaterial);
+        this.glowSprite2 = new THREE.Sprite(glowMaterial);
+
+        // Setup the glow size
+        this.glowSprite1.scale.set(glowSize, glowSize, 1);
+        this.glowSprite2.scale.set(glowSize, glowSize, 1);
+
 
         gltfLoader.load(
             'models/modello_turbina_final_v3.glb',
@@ -74,14 +96,20 @@ class WindTurbine {
                 if (this.hub) {
                     this.beaconMesh1.position.set(5.03, 13, -13.54); //height was 12.95
                     this.beaconPointLight1.position.set(5.03, 13.5, -13.54); //height was 13.45
+                    this.glowSprite1.position.set(5.03, 13.5, -13.54);
 
                     this.beaconMesh2.position.set(-5.03, 13, -13.54); //height was 12.95
                     this.beaconPointLight2.position.set(-5.03, 13.5, -13.54); //height was 13.45
+                    this.glowSprite2.position.set(-5.03, 13.5, -13.54);
+
 
                     this.hub.add(this.beaconMesh1);
                     this.hub.add(this.beaconPointLight1);
+                    this.hub.add(this.glowSprite1);
+
                     this.hub.add(this.beaconMesh2);
                     this.hub.add(this.beaconPointLight2);
+                    this.hub.add(this.glowSprite2);
                 }
 
                 this.group.add(model);
@@ -152,29 +180,37 @@ class WindTurbine {
             this.beaconPointLight2.intensity = 0;
         }
         */
-       /*
-        if (isNight) {
-            const intensity = (Math.sin(timeFactor) > 0.5) ? 1.0 : 0.0;
-            this.beaconLightMat.emissive.setHex(intensity > 0.5 ? 0xff0000 : 0x000000);
-            this.beaconPointLight1.intensity = intensity * 2.5;
-            this.beaconPointLight2.intensity = intensity * 2.5;
-        } else {
-            this.beaconLightMat.emissive.setHex(0x000000);
-            this.beaconPointLight1.intensity = 0;
-            this.beaconPointLight2.intensity = 0;
-        }
-        */
+        /*
+         if (isNight) {
+             const intensity = (Math.sin(timeFactor) > 0.5) ? 1.0 : 0.0;
+             this.beaconLightMat.emissive.setHex(intensity > 0.5 ? 0xff0000 : 0x000000);
+             this.beaconPointLight1.intensity = intensity * 2.5;
+             this.beaconPointLight2.intensity = intensity * 2.5;
+         } else {
+             this.beaconLightMat.emissive.setHex(0x000000);
+             this.beaconPointLight1.intensity = 0;
+             this.beaconPointLight2.intensity = 0;
+         }
+         */
         if (isNight) {
             const isLit = Math.sin(timeFactor) > 0.5;
             this.beaconLightMat.color.setHex(isLit ? 0x000000 : 0x550000);
             this.beaconLightMat.emissive.setHex(isLit ? 0xff0000 : 0x000000);
             this.beaconPointLight1.intensity = isLit ? 2.5 : 0.0;
             this.beaconPointLight2.intensity = isLit ? 2.5 : 0.0;
-        } else {
+
+            this.glowSprite1.visible = isLit;
+            this.glowSprite2.visible = isLit;
+
+        }
+        else {
             this.beaconLightMat.color.setHex(0x550000);
             this.beaconLightMat.emissive.setHex(0x000000);
             this.beaconPointLight1.intensity = 0;
             this.beaconPointLight2.intensity = 0;
+
+            this.glowSprite1.visible = false;
+            this.glowSprite2.visible = false;
         }
     }
 }
@@ -289,7 +325,7 @@ class OldWindmill {
 // Instantiate all turbines
 function createTurbines() {
     turbines = [];
-    
+
     // Modern turbines
     turbines.push(new WindTurbine(40, 25, 0.3));
     turbines.push(new WindTurbine(100, -30, 0.3));
@@ -298,14 +334,14 @@ function createTurbines() {
     turbines.push(new WindTurbine(-100, 100, 0.3));
     turbines.push(new WindTurbine(-40, -10, 0.3));
     turbines.push(new WindTurbine(100, 100, 0.3));
-    
+
     // Old windmills
     turbines.push(new OldWindmill(-100, -110, 0.1));
     turbines.push(new OldWindmill(-80, 30, 0.1));
     turbines.push(new OldWindmill(-30, -50, 0.1));
     turbines.push(new OldWindmill(60, 0, 0.1));
     turbines.push(new OldWindmill(30, -80, 0.1));
-    turbines.push(new OldWindmill(10,30, 0.1));
+    turbines.push(new OldWindmill(10, 30, 0.1));
     turbines.push(new OldWindmill(45, 80, 0.1));
     turbines.push(new OldWindmill(80, 40, 0.1));
     turbines.push(new OldWindmill(-20, 110, 0.1));
