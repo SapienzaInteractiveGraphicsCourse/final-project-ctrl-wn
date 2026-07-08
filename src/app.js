@@ -251,11 +251,37 @@ function createEnvironment() {
             uniform float mixSunset;
             uniform float mixNight;
             varying vec3 vWorldDirection;
+
+            mat3 rotationY( float angle ) {
+                return mat3(
+                    cos(angle), 0.0, sin(angle),
+                    0.0, 1.0, 0.0,
+                    -sin(angle), 0.0, cos(angle)
+                );
+            }
+
+            mat3 rotationX( float angle ) {
+                return mat3(
+                    1.0, 0.0, 0.0,
+                    0.0, cos(angle), -sin(angle),
+                    0.0, sin(angle), cos(angle)
+                );
+            }
+
             void main() {
                 vec3 dir = normalize(vWorldDirection);
+                
+                // Il giorno e il tramonto rimangono normali
                 vec4 colDay = textureCube(tDay, dir);
                 vec4 colSunset = textureCube(tSunset, dir);
-                vec4 colNight = textureCube(tNight, dir);
+                
+                // add extra rotation skybox night for better View/Result
+                
+                float rotY = 3.14159 * 0.85;
+                float rotX = 3.14159 * 0.15;
+                
+                vec3 nightDir = rotationY(rotY) * rotationX(rotX) * dir;
+                vec4 colNight = textureCube(tNight, nightDir);
                 
                 float total = mixDay + mixSunset + mixNight;
                 vec4 finalColor = vec4(0.0);
