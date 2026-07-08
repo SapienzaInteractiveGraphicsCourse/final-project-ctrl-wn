@@ -54,7 +54,11 @@ function initGraphics() {
     scene.fog = new THREE.FogExp2(0x0a141e, 0.007);
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
-    camera.position.set(0, 40, 100);
+    if (STATE.currentCamera === 'turbine-1') {
+        camera.position.set(3.84, 10.26, 117.86);
+    } else {
+        camera.position.set(0, 40, 100);
+    }
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -74,7 +78,20 @@ function initGraphics() {
     controls.enablePan = false;
     controls.enableZoom = false;
     controls.rotateSpeed = 1.0;
-    controls.target.set(0, 39.971, 99.904);
+
+    if (STATE.currentCamera === 'turbine-1') {
+        const lookDist = 100;
+        const dir = { x: -0.25, y: 0.16, z: -0.95 };
+        controls.target.set(
+            3.84 + (dir.x * lookDist),
+            10.26 + (dir.y * lookDist),
+            117.86 + (dir.z * lookDist)
+        );
+        controls.enabled = false;
+    } else {
+        controls.target.set(0, 39.971, 99.904);
+    }
+    STATE.billboardFactor = (STATE.currentCamera === 'orbit') ? 0.0 : 1.0;
 
     window.addEventListener('resize', onWindowResize);
 
@@ -168,10 +185,10 @@ function updateWindAudio() {
             grassSound.play();
         }
         if (STATE.currentCamera === 'turbine-1') {
-            const grassVolume = STATE.windSpeed === 0 ? 0.05 : 0.1 + (speedFactor * 0.9);
+            const grassVolume = STATE.windSpeed === 0 ? 0.05 : 0.8 + (speedFactor * 0.2);
             grassSound.setVolume(grassVolume);
 
-            const grassPitch = 0.7 + (speedFactor * 0.8);
+            const grassPitch = 1.0 + ((speedFactor * 0.3) / 10);
             grassSound.setPlaybackRate(grassPitch);
         } else {
             grassSound.setVolume(0);

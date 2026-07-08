@@ -165,7 +165,7 @@ const STATE = {
     timeOfDay: 12,
     autoTime: true,
     showSpline: true,
-    currentCamera: 'orbit',
+    currentCamera: 'turbine-1',
     fps: 0,
     showWindVectorField: false,
     vectorArrowGroup: null,
