@@ -601,6 +601,12 @@ function updateDayNightCycle(dt) {
         groundColor = new THREE.Color(0x1a331a);
         sunLight.color.copy(sunColor);
         sunLight.intensity = sunIntensity;
+
+
+        //test
+        sunLight.castShadow = true;
+
+
     } else {
         skyColor = new THREE.Color(0x040814);
         groundColor = new THREE.Color(0x050e18);
@@ -619,6 +625,11 @@ function updateDayNightCycle(dt) {
             sunIntensity = 0.45;
         }
         sunLight.intensity = sunIntensity;
+
+        //2nd test
+
+        sunLight.castShadow = false;
+
     }
 
     scene.background.copy(skyColor);
