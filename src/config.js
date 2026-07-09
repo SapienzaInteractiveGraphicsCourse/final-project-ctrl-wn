@@ -172,7 +172,10 @@ const STATE = {
     lastVectorUpdateTime: 0,
     windSigmaThreshold: 35,
     isMuted: false,
-    billboardFactor: 0.0
+    billboardFactor: 0.0,
+    mixDay: 0.0,
+    mixSunset: 0.0,
+    mixNight: 1.0
 };
 
 const windVectorGlobal = new THREE.Vector3(0, 0, -1);

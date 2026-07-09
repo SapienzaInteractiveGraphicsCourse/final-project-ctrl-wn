@@ -168,30 +168,6 @@ class WindTurbine {
         const timeFactor = clock.getElapsedTime() * 2.5;
         const isNight = STATE.timeOfDay < 5.5 || STATE.timeOfDay > 18.5;
 
-        /*
-        if (isNight) {
-            const intensity = (Math.sin(timeFactor) > 0.5) ? 1.0 : 0.0;
-            this.beaconLightMat.color.setHex(intensity > 0.5 ? 0xff0000 : 0x220000);
-            this.beaconPointLight1.intensity = intensity * 2.5;
-            this.beaconPointLight2.intensity = intensity * 2.5;
-        } else {
-            this.beaconLightMat.color.setHex(0x330000);
-            this.beaconPointLight1.intensity = 0;
-            this.beaconPointLight2.intensity = 0;
-        }
-        */
-        /*
-         if (isNight) {
-             const intensity = (Math.sin(timeFactor) > 0.5) ? 1.0 : 0.0;
-             this.beaconLightMat.emissive.setHex(intensity > 0.5 ? 0xff0000 : 0x000000);
-             this.beaconPointLight1.intensity = intensity * 2.5;
-             this.beaconPointLight2.intensity = intensity * 2.5;
-         } else {
-             this.beaconLightMat.emissive.setHex(0x000000);
-             this.beaconPointLight1.intensity = 0;
-             this.beaconPointLight2.intensity = 0;
-         }
-         */
         if (isNight) {
             const isLit = Math.sin(timeFactor) > 0.5;
             this.beaconLightMat.color.setHex(isLit ? 0x000000 : 0x550000);
@@ -201,7 +177,6 @@ class WindTurbine {
 
             this.glowSprite1.visible = isLit;
             this.glowSprite2.visible = isLit;
-
         }
         else {
             this.beaconLightMat.color.setHex(0x550000);

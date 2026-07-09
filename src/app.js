@@ -547,27 +547,34 @@ function updateDayNightCycle(dt) {
     let mixDay = 0, mixSunset = 0, mixNight = 0;
     const time = STATE.timeOfDay;
 
-    if (time >= 5.0 && time < 6.0) {
-        const f = time - 5.0;
+    // night -> sunset 4-6, sunset -> day 6-8
+    // day -> sunset 16-18, sunset -> night 18-20
+    if (time >= 4.0 && time < 6.0) {
+        const f = (time - 4.0) / 2.0;
         mixNight = 1.0 - f;
         mixSunset = f;
-    } else if (time >= 6.0 && time < 7.0) {
-        const f = time - 6.0;
+    } else if (time >= 6.0 && time < 8.0) {
+        const f = (time - 6.0) / 2.0;
         mixSunset = 1.0 - f;
         mixDay = f;
-    } else if (time >= 7.0 && time < 17.0) {
+    } else if (time >= 8.0 && time < 16.0) {
         mixDay = 1.0;
-    } else if (time >= 17.0 && time < 18.0) {
-        const f = time - 17.0;
+    } else if (time >= 16.0 && time < 18.0) {
+        const f = (time - 16.0) / 2.0;
         mixDay = 1.0 - f;
         mixSunset = f;
-    } else if (time >= 18.0 && time < 19.0) {
-        const f = time - 18.0;
+    } else if (time >= 18.0 && time < 20.0) {
+        const f = (time - 18.0) / 2.0;
         mixSunset = 1.0 - f;
         mixNight = f;
     } else {
         mixNight = 1.0;
     }
+
+    // Publish to STATE so other modules can read the mix values
+    STATE.mixDay = mixDay;
+    STATE.mixSunset = mixSunset;
+    STATE.mixNight = mixNight;
 
     if (skyboxMat) {
         skyboxMat.uniforms.mixDay.value = mixDay;
@@ -575,62 +582,51 @@ function updateDayNightCycle(dt) {
         skyboxMat.uniforms.mixNight.value = mixNight;
     }
 
-    let skyColor, groundColor, sunIntensity, sunColor;
+    // Smooth lighting interpolation (using mix weightss)
+    const total = mixDay + mixSunset + mixNight;
+    const wD = mixDay / total;
+    const wS = mixSunset / total;
+    const wN = mixNight / total;
 
-    if (STATE.timeOfDay >= 6 && STATE.timeOfDay <= 18) {
-        let factor = 1.0;
-        if (STATE.timeOfDay < 8) {
-            factor = (STATE.timeOfDay - 6) / 2;
-            skyColor = new THREE.Color().lerpColors(new THREE.Color(0x2d1a3c), new THREE.Color(0x7dd3fc), factor);
-            sunColor = new THREE.Color(0xfb923c);
-            sunIntensity = factor * 1.1;
-            hemiLight.intensity = 0.15 + factor * 0.85;
-        } else if (STATE.timeOfDay > 16) {
-            factor = (18 - STATE.timeOfDay) / 2;
-            skyColor = new THREE.Color().lerpColors(new THREE.Color(0x31102f), new THREE.Color(0x93c5fd), factor);
-            sunColor = new THREE.Color(0xf97316);
-            sunIntensity = factor * 1.1;
-            hemiLight.intensity = 0.15 + factor * 0.85;
-        } else {
-            skyColor = new THREE.Color(0x93c5fd);
-            sunColor = new THREE.Color(0xfef3c7);
-            sunIntensity = 1.2;
-            hemiLight.intensity = 0.8;
-        }
+    // Canonical values for each phase
+    const daySkCol = new THREE.Color(0x93c5fd);
+    const sunsetSkCol = new THREE.Color(0x2d1a3c);
+    const nightSkCol = new THREE.Color(0x040814);
 
-        groundColor = new THREE.Color(0x1a331a);
-        sunLight.color.copy(sunColor);
-        sunLight.intensity = sunIntensity;
+    const dayGndCol = new THREE.Color(0x1a331a);
+    const sunsetGndCol = new THREE.Color(0x1a1a10);
+    const nightGndCol = new THREE.Color(0x050e18);
 
+    const daySunCol = new THREE.Color(0xfef3c7);
+    const sunsetSunCol = new THREE.Color(0xfb923c);
+    const nightSunCol = new THREE.Color(0x3b82f6);
 
-        //test
-        sunLight.castShadow = true;
+    const skyColor = new THREE.Color(
+        daySkCol.r * wD + sunsetSkCol.r * wS + nightSkCol.r * wN,
+        daySkCol.g * wD + sunsetSkCol.g * wS + nightSkCol.g * wN,
+        daySkCol.b * wD + sunsetSkCol.b * wS + nightSkCol.b * wN
+    );
 
+    const groundColor = new THREE.Color(
+        dayGndCol.r * wD + sunsetGndCol.r * wS + nightGndCol.r * wN,
+        dayGndCol.g * wD + sunsetGndCol.g * wS + nightGndCol.g * wN,
+        dayGndCol.b * wD + sunsetGndCol.b * wS + nightGndCol.b * wN
+    );
 
-    } else {
-        skyColor = new THREE.Color(0x040814);
-        groundColor = new THREE.Color(0x050e18);
-        sunLight.color.setHex(0x3b82f6);
+    const sunColor = new THREE.Color(
+        daySunCol.r * wD + sunsetSunCol.r * wS + nightSunCol.r * wN,
+        daySunCol.g * wD + sunsetSunCol.g * wS + nightSunCol.g * wN,
+        daySunCol.b * wD + sunsetSunCol.b * wS + nightSunCol.b * wN
+    );
 
-        hemiLight.intensity = 0.35;
+    const sunIntensity = 1.2 * wD + 0.5 * wS + 0.45 * wN;
+    hemiLight.intensity = 0.8 * wD + 0.15 * wS + 0.35 * wN;
 
-        let factor = 1.0;
-        if (STATE.timeOfDay > 18 && STATE.timeOfDay < 20) {
-            factor = (20 - STATE.timeOfDay) / 2;
-            sunIntensity = 0.3 + factor * 0.2;
-        } else if (STATE.timeOfDay > 4 && STATE.timeOfDay < 6) {
-            factor = (STATE.timeOfDay - 4) / 2;
-            sunIntensity = 0.3 + factor * 0.2;
-        } else {
-            sunIntensity = 0.45;
-        }
-        sunLight.intensity = sunIntensity;
+    sunLight.color.copy(sunColor);
+    sunLight.intensity = sunIntensity;
 
-        //2nd test
-
-        sunLight.castShadow = false;
-
-    }
+    // Shadow casting: toggle off only when fully night (intensity already near 0)
+    sunLight.castShadow = (mixNight < 0.95);
 
     scene.background.copy(skyColor);
     scene.fog.color.copy(skyColor);
