@@ -136,7 +136,7 @@ function createDynamicGrass() {
     let normalIdx = 0;
     let flowerIdx = 0;
 
-    // OTTIMIZZAZIONE: Pre-calcolo dei punti della spline (100 step invece di 2.5 milioni di valutazioni)
+    // Precompute Spline Points
     const splineSteps = 100;
     const precomputedPoints = [];
     const precomputedTangents = [];
@@ -160,7 +160,7 @@ function createDynamicGrass() {
 
         const posWorld = new THREE.Vector3(x, y, z);
 
-        // OTTIMIZZAZIONE: Ricerca sul set precalcolato tramite distanceToSquared (evita Math.sqrt lento)
+        // Search on precomputed set via distanceToSquared (this is better because avoids slow Math.sqrt)
         let minDistSq = Infinity;
         let bestIndex = 0;
         for (let j = 0; j <= splineSteps; j++) {

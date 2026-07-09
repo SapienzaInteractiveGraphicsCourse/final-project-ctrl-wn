@@ -818,7 +818,7 @@ function loadCubeTextureFromCross(url, callback) {
             callback(cubeTex);
         }
 
-        loadingManager.itemEnd(url); // Il taglio è terminato, sblocchiamo il caricamento
+        loadingManager.itemEnd(url);
     };
 
     img.onerror = () => {
