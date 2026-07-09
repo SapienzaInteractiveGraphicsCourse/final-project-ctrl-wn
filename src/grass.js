@@ -12,9 +12,9 @@ function createDynamicGrass() {
     const normalCount = count - flowerCount;
 
     const normalWindDir = [];
-    const normalWindDist = []; 
+    const normalWindDist = [];
     const flowerWindDir = [];
-    const flowerWindDist = []; 
+    const flowerWindDist = [];
 
     const sharedUserData = {
         uTime: { value: 0 },
@@ -22,7 +22,7 @@ function createDynamicGrass() {
         uWindDirection: { value: windVectorGlobal },
         uWindMode: { value: 0 },
         uBillboard: { value: STATE.billboardFactor },
-        uSigma: { value: STATE.windSigmaThreshold } 
+        uSigma: { value: STATE.windSigmaThreshold }
     };
 
     const grassMat = new THREE.MeshPhongMaterial({
@@ -49,7 +49,7 @@ function createDynamicGrass() {
         shader.uniforms.uWindDirection = sharedUserData.uWindDirection;
         shader.uniforms.uWindMode = sharedUserData.uWindMode;
         shader.uniforms.uBillboard = sharedUserData.uBillboard;
-        shader.uniforms.uSigma = sharedUserData.uSigma; 
+        shader.uniforms.uSigma = sharedUserData.uSigma;
 
         shader.vertexShader = `
             uniform float uTime;
@@ -136,6 +136,16 @@ function createDynamicGrass() {
     let normalIdx = 0;
     let flowerIdx = 0;
 
+    // OTTIMIZZAZIONE: Pre-calcolo dei punti della spline (100 step invece di 2.5 milioni di valutazioni)
+    const splineSteps = 100;
+    const precomputedPoints = [];
+    const precomputedTangents = [];
+    for (let i = 0; i <= splineSteps; i++) {
+        const t = i / splineSteps;
+        precomputedPoints.push(splinePath.getPointAt(t));
+        precomputedTangents.push(splinePath.getTangentAt(t).normalize());
+    }
+
     for (let i = 0; i < count; i++) {
         const x = (Math.random() - 0.5) * range;
         const z = (Math.random() - 0.5) * range;
@@ -149,11 +159,20 @@ function createDynamicGrass() {
         dummy.updateMatrix();
 
         const posWorld = new THREE.Vector3(x, y, z);
-        const tClosest = findClosestSplinePoint(posWorld, splinePath);
-        const tangent = splinePath.getTangentAt(tClosest).normalize();
 
-        const splinePoint = splinePath.getPointAt(tClosest);
-        const distance = posWorld.distanceTo(splinePoint);
+        // OTTIMIZZAZIONE: Ricerca sul set precalcolato tramite distanceToSquared (evita Math.sqrt lento)
+        let minDistSq = Infinity;
+        let bestIndex = 0;
+        for (let j = 0; j <= splineSteps; j++) {
+            const distSq = posWorld.distanceToSquared(precomputedPoints[j]);
+            if (distSq < minDistSq) {
+                minDistSq = distSq;
+                bestIndex = j;
+            }
+        }
+
+        const tangent = precomputedTangents[bestIndex];
+        const distance = Math.sqrt(minDistSq); // Fai la radice solo per la distanza minima finale
 
         if (i < normalCount) {
             normalMesh.setMatrixAt(normalIdx, dummy.matrix);

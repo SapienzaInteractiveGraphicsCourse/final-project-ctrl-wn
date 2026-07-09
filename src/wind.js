@@ -124,16 +124,18 @@ function createWindTrails() {
     }
 }
 
+// Use distanceToSquared instead of distanceTo to avoid heavy root nodes
+// this is better because it avoids slow Math.sqrt
 function findClosestSplinePoint(pos, spline, steps = 100) {
-    let minDistance = Infinity;
+    let minDistanceSq = Infinity;
     let bestT = 0;
 
     for (let i = 0; i <= steps; i++) {
         const t = i / steps;
         const pt = spline.getPointAt(t);
-        const dist = pos.distanceTo(pt);
-        if (dist < minDistance) {
-            minDistance = dist;
+        const distSq = pos.distanceToSquared(pt);
+        if (distSq < minDistanceSq) {
+            minDistanceSq = distSq;
             bestT = t;
         }
     }

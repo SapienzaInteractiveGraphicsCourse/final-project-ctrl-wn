@@ -779,6 +779,8 @@ function animate(now) {
 
 // Slice cross skybox textures into faces
 function loadCubeTextureFromCross(url, callback) {
+    loadingManager.itemStart(url); // Diciamo al manager che è iniziato il download
+
     const img = new Image();
     img.src = url;
     img.onload = () => {
@@ -815,5 +817,12 @@ function loadCubeTextureFromCross(url, callback) {
         if (callback) {
             callback(cubeTex);
         }
+
+        loadingManager.itemEnd(url); // Il taglio è terminato, sblocchiamo il caricamento
+    };
+
+    img.onerror = () => {
+        loadingManager.itemError(url);
+        loadingManager.itemEnd(url);
     };
 }
