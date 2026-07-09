@@ -87,7 +87,8 @@ function createWindSpline() {
         });
     }
 
-    createWindTrails();
+    //disattivo per ora, da capire come implementare la scia sulla spline
+    // createWindTrails();
 
     if (STATE.showWindVectorField) {
         updateWindVectorField();

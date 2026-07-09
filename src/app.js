@@ -695,12 +695,12 @@ function animate(now) {
         const binormal = new THREE.Vector3().crossVectors(tangent, normal).normalize();
 
         const angle = leaf.t * Math.PI * 10 + clock.getElapsedTime() * 3.5 + leaf.oscOffset;
-        const radius = 1.5 + Math.sin(clock.getElapsedTime() * 1.5 + leaf.oscOffset) * 0.4;
+        const radius = 4.0 + Math.sin(clock.getElapsedTime() * 1.5 + leaf.oscOffset) * 1.5;
 
         const spiralX = Math.cos(angle) * radius;
         const spiralY = Math.sin(angle) * radius;
 
-        position.y += 2.8;
+        position.y += 5.0;
         position.addScaledVector(normal, spiralX);
         position.addScaledVector(binormal, spiralY);
         position.y += Math.sin(clock.getElapsedTime() * 5.0 + leaf.oscOffset) * 0.15;
