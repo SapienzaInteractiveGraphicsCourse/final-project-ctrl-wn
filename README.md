@@ -1,16 +1,27 @@
 # WindWeaver
 ![WindWeaver Gameplay](images/preview.gif)
+![WindWeaver Screenshot](images/logo.png)
+
 
 *A 3D wind farm simulator built with Three.js.*
 
-**Play the demo here:** [(https://sapienzainteractivegraphicscourse.github.io/final-project-ctrl-wn/) \]]
+**Play the demo here:** https://sapienzainteractivegraphicscourse.github.io/final-project-ctrl-wn/ 
 
 WindWeaver is an interactive 3D WebGL simulator of a wind farm. It features hierarchical turbine models, a custom GPU-instanced grass shader, dynamic day/night lighting cycles, and a custom wind simulation that can toggle between global unidirectional flow and local flow guided by 3D Catmull-Rom splines.
 
-Developed for the **Interactive Graphics Course** at **Sapienza University of Rome** by JOSE' RAUL NICOLAS PALACIO and WALTER ENRICO BRUTI.
+Developed for the **Interactive Graphics Course** at **Sapienza University of Rome**.
 
----
-![WindWeaver Screenshot](images/logo.png)
+### Authors
+| Name | Matricola |
+| :--- | :--- |
+| José Raul Nicolas Palacio | 1766100 |
+| Walter Enrico Bruti | 2279080 |
+
+
+
+
+
+
 
 
 

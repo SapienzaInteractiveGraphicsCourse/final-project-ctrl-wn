@@ -1,7 +1,7 @@
 // Core 3D engine initialization and rendering loop
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Reset asset flag – new assets (grass textures, skybox, audio) are about to load
+    // Reset asset flag, new assets (grass textures, skybox, audio) are about to load 
     isAssetsLoaded = false;
 
     initGraphics();
@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
         UI.init();
     }
 
-    // App initialisation complete – signal the loading gate
+    // App initialisation complete, signal the loading gate (da testare, non rimuovere ancora)
     isAppInitialized = true;
     checkAndHideLoadingScreen();
 
