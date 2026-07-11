@@ -65,6 +65,12 @@ The scene utilizes a Physically Based Rendering (PBR) pipeline.
 *   **GPU Instancing**: The terrain is populated by 25,000 grass blades and flowers using `THREE.InstancedMesh` for maximum performance.
 *   **Vertex Displacement**: The grass material's vertex shader was heavily customized to calculate wind bending and wave distortion on the GPU. Grass blades automatically orient themselves towards the camera (Billboard effect) using a custom rotation matrix injected into the shader.
 
+### Performance Note for Dual-GPU Laptops:
+
+The application requests the dedicated GPU via WebGL's powerPreference: "high-performance" flag. However, some browsers or OS power-saving profiles might override this and force the Integrated GPU, resulting in 15-20 fps due to the vertex instancing (30,000 grass blades).
+
+For the best experience, please ensure hardware acceleration is enabled and the browser is allowed to use the discrete GPU.
+
 ---
 
 ## 📚 Libraries and Assets Used
@@ -72,7 +78,7 @@ The scene utilizes a Physically Based Rendering (PBR) pipeline.
 ### Libraries
 *   **[Three.js (r128)](https://threejs.org/)**: Core 3D WebGL engine.
 *   **GLTFLoader & OrbitControls**: Three.js official addons.
-*   **[Tween.js (18.6.4)](https://github.com/tweenjs/tween.js/)**: Used for smooth camera transitions and UI parameter interpolation (as suggested in the course).
+*   **[Tween.js (18.6.4)](https://github.com/tweenjs/tween.js/)**: Used for smooth camera transitions and UI parameter interpolation.
 
 ### External Assets (Not developed by the team)
 *   **Modern Turbine Model**: Downloaded from Sketchfab / custom modeler.
