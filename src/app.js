@@ -1,6 +1,9 @@
 // Core 3D engine initialization and rendering loop
 
 window.addEventListener('DOMContentLoaded', () => {
+    // Reset asset flag – new assets (grass textures, skybox, audio) are about to load
+    isAssetsLoaded = false;
+
     initGraphics();
     generateTextures();
     createEnvironment();
@@ -11,8 +14,14 @@ window.addEventListener('DOMContentLoaded', () => {
     if (typeof UI !== 'undefined') {
         UI.init();
     }
+
+    // App initialisation complete – signal the loading gate
+    isAppInitialized = true;
+    checkAndHideLoadingScreen();
+
     animate();
 });
+
 
 // Load billboard sprites and trails
 function generateTextures() {

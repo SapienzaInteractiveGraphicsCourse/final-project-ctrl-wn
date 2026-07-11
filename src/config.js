@@ -2,11 +2,28 @@
 let audioListener, windSound, grassSound, turbineSound;
 let beaconGlowTexture;
 
+// Loading gate flags – the loading screen hides only when BOTH are true
+let isAssetsLoaded = false;
+let isAppInitialized = false;
+
+function checkAndHideLoadingScreen() {
+    if (!isAssetsLoaded || !isAppInitialized) return;
+
+    clearTimeout(loadingTimeout);
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen && !loadingScreen.classList.contains('fade-out')) {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 800);
+    }
+}
+
 // initializing global LoadingManager
 const loadingManager = new THREE.LoadingManager();
 
-// if loading time > 10s, automatic unlock of the scene
-const loadingTimeout = setTimeout(() => {
+// if loading time > 90s, automatic unlock of the scene
+let loadingTimeout = setTimeout(() => {
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen && !loadingScreen.classList.contains('fade-out')) {
         console.warn('too much time used: automatic unlock of the scene.');
@@ -15,21 +32,15 @@ const loadingTimeout = setTimeout(() => {
             loadingScreen.style.display = 'none';
         }, 800);
     }
-}, 10000);
+}, 90000);
 
 loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
     // possible strarting log
 };
 
 loadingManager.onLoad = function () {
-    clearTimeout(loadingTimeout);
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.add('fade-out');
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-        }, 800);
-    }
+    isAssetsLoaded = true;
+    checkAndHideLoadingScreen();
 };
 
 loadingManager.onProgress = function (url, itemsLoaded, itemsTotal) {
