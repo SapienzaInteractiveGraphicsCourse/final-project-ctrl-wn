@@ -362,7 +362,10 @@ const UI = {
 
     toggleWindLegend(visible) {
         if (this.elements.windLegend) {
-            this.elements.windLegend.style.display = visible ? 'block' : 'none';
+            //if we want to NOT show vector field values:
+            this.elements.windLegend.style.display = 'none';
+            //if we want to show vector field values:
+            //this.elements.windLegend.style.display = visible ? 'block' : 'none';
         }
     }
 };
