@@ -1,4 +1,4 @@
-// Wind turbine classes and initialization
+// wind turbine classes and initialization
 
 class WindTurbine {
     constructor(x, z, scale = 1.0) {
@@ -18,8 +18,8 @@ class WindTurbine {
         this.hub = null;
         this.rotor = null;
 
-        // Obstacle warning light (red blinking beacon)
-        //this.beaconLightMat = new THREE.MeshBasicMaterial({ color: 0x330000 });
+        // there is the obstacle warning light (red blinking beacon) for the planes and for illumination during the night time
+        // this.beaconLightMat = new THREE.MeshBasicMaterial({ color: 0x330000 });
         this.beaconLightMat = new THREE.MeshStandardMaterial({
             color: 0x550000,
             emissive: 0x000000,
@@ -31,8 +31,6 @@ class WindTurbine {
         this.beaconPointLight1 = new THREE.PointLight(0xff0000, 0, 15);
 
         this.beaconMesh2 = new THREE.Mesh(beaconGeo, this.beaconLightMat);
-        this.beaconPointLight2 = new THREE.PointLight(0xff0000, 0, 15);
-
         this.beaconPointLight2 = new THREE.PointLight(0xff0000, 0, 15);
 
         // Glow Effect
@@ -50,7 +48,7 @@ class WindTurbine {
         this.glowSprite1 = new THREE.Sprite(glowMaterial);
         this.glowSprite2 = new THREE.Sprite(glowMaterial);
 
-        // Setup the glow size
+        // setup the glow size
         this.glowSprite1.scale.set(glowSize, glowSize, 1);
         this.glowSprite2.scale.set(glowSize, glowSize, 1);
 
@@ -140,12 +138,12 @@ class WindTurbine {
             localSpeed = globalSpeedPercent * factor;
         }
 
-        // Standard operational limits
+        // standard operational limits
         let targetRotorSpeed = 0;
         if (localSpeed < 10) {
             targetRotorSpeed = 0;
         } else if (localSpeed > 90) {
-            targetRotorSpeed = 0; // Aerodynamic safety brake
+            targetRotorSpeed = 0; // aerodynamic safety brake
         } else {
             targetRotorSpeed = (localSpeed / 100) * 2.8;
         }
@@ -164,7 +162,7 @@ class WindTurbine {
         this.currentYaw += diff * Math.min(dt * yawSpeed, 1.0);
         this.tower.rotation.y = this.currentYaw;
 
-        // Blinking beacon at night
+        // blinking beacon at night
         const timeFactor = clock.getElapsedTime() * 2.5;
         const isNight = STATE.timeOfDay < 5.5 || STATE.timeOfDay > 18.5;
 
@@ -278,7 +276,7 @@ class OldWindmill {
             localSpeed = globalSpeedPercent * factor;
         }
 
-        // Old mills spin proportional to wind speed without safety cut-off
+        // old mills spin proportional to wind speed without safety cut-off
         let targetRotorSpeed = (localSpeed / 100) * 2.8;
 
         this.currentRotorSpeed += (targetRotorSpeed - this.currentRotorSpeed) * dt * 2;
@@ -297,11 +295,11 @@ class OldWindmill {
     }
 }
 
-// Instantiate all turbines
+// instantiate all turbines
 function createTurbines() {
     turbines = [];
 
-    // Modern turbines
+    // modern turbines
     turbines.push(new WindTurbine(40, 25, 0.3));
     turbines.push(new WindTurbine(100, -30, 0.3));
     turbines.push(new WindTurbine(-100, -60, 0.3));
@@ -310,7 +308,7 @@ function createTurbines() {
     turbines.push(new WindTurbine(-40, -10, 0.3));
     turbines.push(new WindTurbine(100, 100, 0.3));
 
-    // Old windmills
+    // old windmills
     turbines.push(new OldWindmill(-100, -110, 0.1));
     turbines.push(new OldWindmill(-80, 30, 0.1));
     turbines.push(new OldWindmill(-30, -50, 0.1));

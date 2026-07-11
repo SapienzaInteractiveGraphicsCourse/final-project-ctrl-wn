@@ -1,8 +1,8 @@
-// Global variables and configuration state
+// global variables and configuration state
 let audioListener, windSound, grassSound, turbineSound;
 let beaconGlowTexture;
 
-// Loading gate flags – the loading screen hides only when BOTH are true
+// loading gate flags – the loading screen hides only when BOTH are true
 let isAssetsLoaded = false;
 let isAppInitialized = false;
 
@@ -35,7 +35,7 @@ let loadingTimeout = setTimeout(() => {
 }, 90000);
 
 loadingManager.onStart = function (url, itemsLoaded, itemsTotal) {
-    // possible strarting log
+    // possible starting log
 };
 
 loadingManager.onLoad = function () {
@@ -66,7 +66,7 @@ loadingManager.onError = function (url) {
 const gltfLoader = new THREE.GLTFLoader(loadingManager);
 const textureLoader = new THREE.TextureLoader(loadingManager);
 
-// Turbine textures configuration
+// turbine textures configuration
 const turbineTextures = {
     Foundation: {
         map: textureLoader.load('textures/Foundation_COL.png'),
@@ -94,7 +94,7 @@ const turbineTextures = {
     }
 };
 
-// Apply correct encoding and settings to textures
+// apply correct encoding and settings to textures
 Object.values(turbineTextures).forEach(set => {
     Object.keys(set).forEach(key => {
         const texture = set[key];
@@ -107,7 +107,7 @@ Object.values(turbineTextures).forEach(set => {
     });
 });
 
-// Old windmill textures
+// old windmill textures
 const oldWindmillTextures = {
     Hub: {
         map: textureLoader.load('textures/Windmill_Dpng.png'),
@@ -141,7 +141,7 @@ Object.values(oldWindmillTextures).forEach(set => {
     });
 });
 
-// Rock textures mapping
+// rock textures mapping
 const rockTextures = {};
 for (let i = 1; i <= 6; i++) {
     const num = i.toString().padStart(2, '0');
@@ -155,7 +155,7 @@ for (let i = 1; i <= 6; i++) {
     };
 }
 
-// Ensure proper settings on rock textures
+// we need proper settings on rock textures
 Object.values(rockTextures).forEach(rockType => {
     Object.values(rockType).forEach(set => {
         Object.keys(set).forEach(key => {
@@ -168,7 +168,7 @@ Object.values(rockTextures).forEach(rockType => {
     });
 });
 
-// Global state configuration
+// this is the global state configuration
 const STATE = {
     windMode: 'global',
     windSpeed: 40,
@@ -191,13 +191,13 @@ const STATE = {
 
 const windVectorGlobal = new THREE.Vector3(0, 0, -1);
 
-// Scene elements references
+// scene elements references
 let scene, camera, renderer, controls;
 let terrain, grassMesh, grassGeo, splinePath, splineHelper;
 let windLeaves = [];
 let windTrails = [];
 let turbines = [];
 let sunLight, hemiLight;
-let leafTexture, petalTexture, flowerTexture, windTexture;
+let leafTexture, petalTexture, flowerTexture, windTexture, leafMat;
 let clock = new THREE.Clock();
 let skyboxMesh, skyboxMat;

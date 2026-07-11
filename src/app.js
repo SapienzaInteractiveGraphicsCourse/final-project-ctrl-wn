@@ -1,7 +1,7 @@
-// Core 3D engine initialization and rendering loop
+// here there is the rendering cycle after calling all the other js files
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Reset asset flag, new assets (grass textures, skybox, audio) are about to load 
+    // loading assets here
     isAssetsLoaded = false;
 
     initGraphics();
@@ -15,7 +15,7 @@ window.addEventListener('DOMContentLoaded', () => {
         UI.init();
     }
 
-    // App initialisation complete, signal the loading gate (da testare, non rimuovere ancora)
+    // the initialisation is done
     isAppInitialized = true;
     checkAndHideLoadingScreen();
 
@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Load billboard sprites and trails
+// here we load billboard sprites and trails
 function generateTextures() {
     leafTexture = textureLoader.load('textures/billboar_grass_v2.png');
     leafTexture.wrapS = THREE.ClampToEdgeWrapping;
@@ -46,15 +46,17 @@ function generateTextures() {
     petalTexture.wrapT = THREE.ClampToEdgeWrapping;
     petalTexture.encoding = THREE.sRGBEncoding;
 
+    /*
     windTexture = textureLoader.load('textures/wind.png');
     windTexture.wrapS = THREE.RepeatWrapping;
     windTexture.wrapT = THREE.ClampToEdgeWrapping;
     windTexture.encoding = THREE.sRGBEncoding;
+    */
     beaconGlowTexture = textureLoader.load('textures/glow.png');
 
 }
 
-// Setup Three.js WebGL renderer, OrbitControls and Audio
+// this is the setup for threejs, for the orbitcontrols and for the audio
 function initGraphics() {
     const container = document.getElementById('canvas-container');
 
@@ -104,7 +106,7 @@ function initGraphics() {
 
     window.addEventListener('resize', onWindowResize);
 
-    // Zooming moves camera target forward
+    // the zooming moves camera target forward
     window.addEventListener('wheel', (event) => {
         if (STATE.currentCamera === 'orbit') {
             const moveSpeed = 3.5;
@@ -135,7 +137,7 @@ function initGraphics() {
 
     const audioLoader = new THREE.AudioLoader(loadingManager);
 
-    // Loading file audio
+    // loading file audio
     audioLoader.load('sounds/wind.mp3', (buffer) => {
         windSound.setBuffer(buffer);
         windSound.setLoop(true);
@@ -154,7 +156,7 @@ function initGraphics() {
         updateWindAudio();
     });
 
-    // It is used to unlock the audio context on the user's first click (this made to bypass browser restrictions)
+    // this is used to unlock the audio context on the user's first click (this made to bypass browser restrictions)
     window.addEventListener('click', () => {
         if (audioListener && audioListener.context && audioListener.context.state === 'suspended') {
             audioListener.context.resume().then(() => {
@@ -168,7 +170,7 @@ function initGraphics() {
 function updateWindAudio() {
     const speedFactor = STATE.windSpeed / 100;
 
-    // If the application has changed, reset all volumes
+    // if the application has changed, reset all volumes
     if (STATE.isMuted) {
         if (windSound && windSound.buffer) windSound.setVolume(0);
         if (grassSound && grassSound.buffer) grassSound.setVolume(0);
@@ -176,7 +178,7 @@ function updateWindAudio() {
         return;
     }
 
-    // WIND SOUND (always active by default) TO translate
+    // wind sound (always active by default) to translate
     if (windSound && windSound.buffer) {
         if (!windSound.isPlaying) {
             windSound.play();
@@ -188,7 +190,7 @@ function updateWindAudio() {
         windSound.setPlaybackRate(windPitch);
     }
 
-    // GRASS SOUND --
+    // grass sound
     if (grassSound && grassSound.buffer) {
         if (!grassSound.isPlaying) {
             grassSound.play();
@@ -204,7 +206,7 @@ function updateWindAudio() {
         }
     }
 
-    // TURBINE SOUND
+    // turbine sound
     if (turbineSound && turbineSound.buffer) {
         if (!turbineSound.isPlaying) {
             turbineSound.play();
@@ -232,7 +234,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Lights, Terrain geometry and Skybox blending shaders
+// lights, terrain geometry and skybox blending shaders
 function createEnvironment() {
     hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
     hemiLight.position.set(0, 200, 0);
@@ -452,7 +454,7 @@ function createEnvironment() {
     scene.add(terrain);
 }
 
-// Camera transition tweens
+// camera transition tweens
 function setupCameraView() {
     controls.enabled = (STATE.currentCamera === 'orbit');
 
@@ -492,7 +494,7 @@ function setupCameraView() {
             z: targetPos.z + (dir.z * lookDist)
         };
 
-        //Setup configuration fixed view 3, disable auto time cycle and set to 12:00, enable wind vector field and spline, set wind mode to spline
+        //setup configuration fixed view 3, disable auto time cycle and set to 12:00, enable wind vector field and spline, set wind mode to spline
 
         STATE.autoTime = false;
         if (UI.elements.autoTimeCheck) {
@@ -534,7 +536,7 @@ function setupCameraView() {
     updateWindAudio();
 }
 
-// Global day/night interpolation
+// global day and night interpolation
 function updateDayNightCycle(dt) {
     if (STATE.autoTime) {
         STATE.timeOfDay += dt * 0.15;
@@ -580,7 +582,7 @@ function updateDayNightCycle(dt) {
         mixNight = 1.0;
     }
 
-    // Publish to STATE so other modules can read the mix values
+    // publishh to STATE so other modules can read the mix values
     STATE.mixDay = mixDay;
     STATE.mixSunset = mixSunset;
     STATE.mixNight = mixNight;
@@ -591,13 +593,13 @@ function updateDayNightCycle(dt) {
         skyboxMat.uniforms.mixNight.value = mixNight;
     }
 
-    // Smooth lighting interpolation (using mix weightss)
+    // smooth lighting interpolation (using mix weightss)
     const total = mixDay + mixSunset + mixNight;
     const wD = mixDay / total;
     const wS = mixSunset / total;
     const wN = mixNight / total;
 
-    // Canonical values for each phase
+    // canonical values for each phase
     const daySkCol = new THREE.Color(0x93c5fd);
     const sunsetSkCol = new THREE.Color(0x2d1a3c);
     const nightSkCol = new THREE.Color(0x040814);
@@ -634,7 +636,7 @@ function updateDayNightCycle(dt) {
     sunLight.color.copy(sunColor);
     sunLight.intensity = sunIntensity;
 
-    // Shadow casting: toggle off only when fully night (intensity already near 0)
+    // shadow casting: toggle off only when fully night (intensity already near 0)
     sunLight.castShadow = (mixNight < 0.95);
 
     scene.background.copy(skyColor);
@@ -644,7 +646,7 @@ function updateDayNightCycle(dt) {
     hemiLight.groundColor.copy(groundColor);
 }
 
-// Animation loop
+// animation loop
 let lastTime = 0;
 let frameCount = 0;
 let fpsTimer = 0;
@@ -725,7 +727,8 @@ function animate(now) {
         leaf.mesh.scale.setScalar(leaf.randomScale);
     });
 
-    // Wind trail animations
+    // Wind trail animations are NOT active because of problems
+    /*
     windTrails.forEach(trail => {
         trail.t += dt * 0.08 * trail.speedMultiplier * (0.1 + windSpeedFactor * 2.0);
         if (trail.t > 1) {
@@ -762,6 +765,7 @@ function animate(now) {
 
         trail.mesh.material.opacity = 0.15 * opacityMult;
     });
+    */
 
     if (skyboxMesh) {
         skyboxMesh.position.copy(camera.position);
@@ -786,7 +790,7 @@ function animate(now) {
     renderer.render(scene, camera);
 }
 
-// Slice cross skybox textures into faces
+// slice cross skybox textures into faces
 function loadCubeTextureFromCross(url, callback) {
     loadingManager.itemStart(url); // this to say to the manager to start download
 

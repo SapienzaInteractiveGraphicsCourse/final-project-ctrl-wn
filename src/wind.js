@@ -1,4 +1,4 @@
-// Spline generation and wind simulation logic
+// spline generation and wind simulation logic
 
 function createWindSpline() {
     if (splineHelper) {
@@ -56,7 +56,7 @@ function createWindSpline() {
     });
     splineHelper = new THREE.Line(geometry, material);
 
-    // Only show if both toggles are true
+    // only show if both toggles are true
     splineHelper.visible = STATE.showSpline && STATE.windMode === 'spline';
     scene.add(splineHelper);
 
@@ -95,6 +95,7 @@ function createWindSpline() {
     }
 }
 
+/*
 function createWindTrails() {
     const trailCount = 12;
     const trailGeo = new THREE.PlaneGeometry(6.0, 1.0);
@@ -123,9 +124,10 @@ function createWindTrails() {
         });
     }
 }
+*/
 
-// Use distanceToSquared instead of distanceTo to avoid heavy root nodes
-// this is better because it avoids slow Math.sqrt
+// use distanceToSquared instead of distanceTo to avoid heavy root nodes
+// this is much better because it avoids slow Math.sqrt
 function findClosestSplinePoint(pos, spline, steps = 100) {
     let minDistanceSq = Infinity;
     let bestT = 0;

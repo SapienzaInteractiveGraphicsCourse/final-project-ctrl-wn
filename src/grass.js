@@ -1,4 +1,4 @@
-// Instanced grass rendering with vertex displacement shaders
+// instanced grass rendering with vertex displacement shaders
 
 function createDynamicGrass() {
     const w = 2.5;
@@ -91,8 +91,7 @@ function createDynamicGrass() {
             vec3 windDir = (uWindMode < 0.5) ? normalize(uWindDirection) : -normalize(instanceWindDir);
             float windForce = (uWindMode < 0.5) ? uWindSpeed : uWindSpeed * localFactor;
 
-            float heightFactor = position.y / 2.5;
-            float bendStrength = heightFactor * heightFactor;
+            float bendStrength = vHeightFactor * vHeightFactor;
 
             float baseline = windForce * 2.5;
 
@@ -136,7 +135,7 @@ function createDynamicGrass() {
     let normalIdx = 0;
     let flowerIdx = 0;
 
-    // Precompute Spline Points
+    // precompute Spline Points
     const splineSteps = 100;
     const precomputedPoints = [];
     const precomputedTangents = [];
@@ -160,7 +159,7 @@ function createDynamicGrass() {
 
         const posWorld = new THREE.Vector3(x, y, z);
 
-        // Search on precomputed set via distanceToSquared (this is better because avoids slow Math.sqrt)
+        // search on precomputed set via distanceToSquared (this is better because avoids slow Math.sqrt)
         let minDistSq = Infinity;
         let bestIndex = 0;
         for (let j = 0; j <= splineSteps; j++) {

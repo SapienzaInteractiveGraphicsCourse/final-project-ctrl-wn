@@ -257,7 +257,7 @@ button {
     font-weight: bold;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     transition: background-color 0.2s ease;
-    /* Nessun movimento/transform qui */
+    /* no movement/trasform here */
 }
 
     #mute-button:hover {
@@ -298,7 +298,7 @@ button {
         visibility: hidden;
     }
 
-/* limitation for the logo */
+/* limitation for the logo because have to be smaller */
 .loader-logo {
     max-width: 200px;
     height: auto;

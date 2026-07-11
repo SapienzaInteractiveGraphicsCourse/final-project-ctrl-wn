@@ -1,4 +1,4 @@
-// Terrain height calculation function
+// terrain height calculation function
 function getTerrainHeight(x, z) {
     let y = Math.sin(x * 0.02) * Math.cos(z * 0.02) * 12;
     y += Math.sin(x * 0.05) * 3;
@@ -12,7 +12,7 @@ function getTerrainHeight(x, z) {
     return y;
 }
 
-// Rock class for loading and positioning rock models
+// rock class for loading and positioning rock models
 class Rock {
     constructor(type, x, y, z, scale = 1.0, rotY = 0.0) {
         this.type = type;
@@ -59,7 +59,7 @@ class Rock {
     }
 }
 
-// Populate the landscape with rocks
+// populate the landscape with rocks
 function createRocks() {
     new Rock(2, -28, 6.5, 36, 5.5, 0.0);
     new Rock(2, 4, 4.1, -22, 3.5, 1.2);

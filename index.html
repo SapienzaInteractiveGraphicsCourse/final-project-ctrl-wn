@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WindWeaver</title>
     <link rel="stylesheet" href="src/style.css">
-    <!-- Three.js and addons loaded via CDN -->
+    <!-- three.js and addons loaded via CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <!-- Tween.js for interpolation transitions -->
+    <!-- tween.js for interpolation transitions -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </head>
 
@@ -19,7 +19,7 @@
     <!-- Initial loading screen -->
     <div id="loading-screen">
         <div class="loader-container">
-            <!-- Logo loading -->
+            <!-- logo loading -->
             <img src="textures/logo.png" alt="Loading Logo" class="loader-logo">
 
             <!-- loading bar -->
@@ -35,27 +35,27 @@
         </div>
     </div>
 
-    <!-- Main 3D canvas container -->
+    <!-- main 3D canvas container -->
     <div id="canvas-container"></div>
 
-    <!-- Main HUD panel -->
+    <!-- main HUD panel -->
     <div id="main-panel">
 
-        <!-- Global toggle to hide/show HUD -->
+        <!-- global toggle to hide/show HUD -->
         <div id="main-panel-header" class="window-header" style="border-radius: 4px; background: rgba(0,0,0,0.08); padding: 14px 16px;">
             <h3 style="font-size: 14px;">CONTROL PANEL</h3>
             <span id="main-toggle-icon" class="toggle-icon">▼</span>
         </div>
 
-        <!-- Contents container -->
+        <!-- contents container -->
         <div id="main-panel-content">
 
-            <!-- Logo -->
+            <!-- logo -->
             <div class="panel-logo" style="margin-top: 16px;">
-                <img src="textures/logo.png" alt="Breeze & Blades Logo">
+                <img src="textures/logo.png" alt="Wind Weaver Logo">
             </div>
 
-            <!-- Wind Controls -->
+            <!-- wind Controls -->
             <div class="window-panel">
                 <div class="window-header">
                     <h3>WIND CONTROL</h3>
@@ -100,7 +100,7 @@
                         <input type="range" id="wind-threshold" min="5" max="100" step="5" value="35">
                     </div>
 
-                    <!-- Compass widget for Global wind direction -->
+                    <!-- compass widget for global wind direction -->
                     <div class="control-group" id="compass-group">
                         <label>Global Wind Direction</label>
                         <div class="compass-wrapper">
@@ -114,7 +114,7 @@
                 </div>
             </div>
 
-            <!-- Camera settings -->
+            <!-- camera settings -->
             <div class="window-panel">
                 <div class="window-header">
                     <h3>CAMERA</h3>
@@ -193,7 +193,7 @@
         </div>
     </div>
 
-    <!-- Application scripts loaded in sequential dependency order -->
+    <!-- application scripts loaded in sequential dependency order -->
     <script src="src/config.js"></script>
     <script src="src/ui.js"></script>
     <script src="src/terrain.js"></script>

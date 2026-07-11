@@ -3,7 +3,7 @@
 const UI = {
     elements: {},
 
-    // Cache elements and attach event listeners
+    // cache elements and attach event listeners
     init() {
         this.elements.speedSlider = document.getElementById('wind-speed');
         this.elements.speedVal = document.getElementById('wind-speed-val');
@@ -39,7 +39,7 @@ const UI = {
         this.setupGlobalToggle();
     },
 
-    // Collapsible accordion panels
+    // collapsible accordion panels
     setupAccordions() {
         const headers = document.querySelectorAll('.window-header');
         headers.forEach(header => {
@@ -62,7 +62,7 @@ const UI = {
         });
     },
 
-    // Toggle entire control panel overlay
+    // toggle entire control panel overlay
     setupGlobalToggle() {
         const globalHeader = document.getElementById('main-panel-header');
         const globalContent = document.getElementById('main-panel-content');
@@ -81,7 +81,7 @@ const UI = {
         });
     },
 
-    // Audio toggle
+    // audio toggle
     setupMuteButtonListener() {
         if (!this.elements.muteButton) return;
         this.elements.muteButton.addEventListener('click', () => {
@@ -106,7 +106,7 @@ const UI = {
         });
     },
 
-    // Slider for wind speed
+    // slider for wind speed
     setupWindSpeedListener() {
         if (!this.elements.speedSlider) return;
 
@@ -127,7 +127,7 @@ const UI = {
         });
     },
 
-    // Wind mode selection (global/spline)
+    // wind mode selection (global/spline)
     setupWindModeListener() {
         if (!this.elements.modeSelect) return;
 
@@ -149,7 +149,7 @@ const UI = {
         });
     },
 
-    // Interactive compass widget direction mapping
+    // Interactive compas widget for direction 
     setupCompassListener() {
         if (!this.elements.compass || !this.elements.pointer) return;
 
@@ -167,7 +167,7 @@ const UI = {
             const dy = clientY - centerY;
 
             let angleRad = Math.atan2(dy, dx);
-            let angleDeg = angleRad * (180 / Math.PI) + 90; // North aligns up
+            let angleDeg = angleRad * (180 / Math.PI) + 90; // the north aligns up
 
             STATE.windDirection = angleDeg;
             this.elements.pointer.style.transform = `rotate(${angleDeg}deg)`;
@@ -195,7 +195,7 @@ const UI = {
             isDraggingCompass = false;
         });
 
-        // Mobile touch events support
+        // support for mobile touch events
         this.elements.compass.addEventListener('touchstart', (e) => {
             isDraggingCompass = true;
             updateCompassDirection(e);
@@ -210,7 +210,7 @@ const UI = {
         });
     },
 
-    // Time of day slider
+    // time of day slider
     setupTimeOfDayListener() {
         if (!this.elements.timeSlider) return;
 
@@ -226,7 +226,7 @@ const UI = {
         }
     },
 
-    // Camera view controls
+    // camera view controls
     setupCameraButtonsListener() {
         const camButtons = {
             'cam-orbit': 'orbit',
@@ -254,7 +254,7 @@ const UI = {
         });
     },
 
-    // Toggle visibility of spline helper path
+    // toggle visibility of spline helper path
     setupSplineVisibilityListener() {
         if (!this.elements.splineCheck) return;
 
@@ -267,7 +267,7 @@ const UI = {
         });
     },
 
-    // Wind vector checkbox
+    // wind vector checkbox
     setupWindVectorsListener() {
         if (!this.elements.windVectorsCheck) return;
 
@@ -278,7 +278,7 @@ const UI = {
         });
     },
 
-    // Wind influence radius threshold slider
+    // wind influence radius threshold slider
     setupThresholdListener() {
         if (!this.elements.thresholdSlider) return;
 
@@ -293,7 +293,7 @@ const UI = {
         });
     },
 
-    // Keyboard shortcut F key to toggle vectors
+    // keyboard shortcut F key to toggle vectors
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
             if ((e.key === 'f' || e.key === 'F') && document.activeElement.tagName !== 'INPUT') {
@@ -304,7 +304,7 @@ const UI = {
         });
     },
 
-    // Re-generate spline path
+    // regenerate spline path
     setupRegenSplineListener() {
         if (!this.elements.regenSplineBtn) return;
         this.elements.regenSplineBtn.addEventListener('click', () => {
@@ -362,7 +362,7 @@ const UI = {
 
     toggleWindLegend(visible) {
         if (this.elements.windLegend) {
-            this.elements.windLegend.style.display = 'none';
+            this.elements.windLegend.style.display = visible ? 'block' : 'none';
         }
     }
 };
