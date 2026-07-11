@@ -86,23 +86,20 @@ const UI = {
         if (!this.elements.muteButton) return;
         this.elements.muteButton.addEventListener('click', () => {
             STATE.isMuted = !STATE.isMuted;
-            if (STATE.isMuted) {
-                this.elements.muteButton.innerHTML = '🔇 Audio Disabled';
-                this.elements.muteButton.style.backgroundColor = 'rgba(255, 50, 50, 0.15)';
-                this.elements.muteButton.style.color = '#cc0000';
-                this.elements.muteButton.style.borderColor = 'rgba(255, 50, 50, 0.4)';
-                this.elements.muteButton.onmouseout = () => this.elements.muteButton.style.backgroundColor = 'rgba(255, 50, 50, 0.15)';
-            } else {
-                this.elements.muteButton.innerHTML = '🔊 Audio Enabled';
-                this.elements.muteButton.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
-                this.elements.muteButton.style.color = 'var(--text-primary)';
-                this.elements.muteButton.style.borderColor = 'rgba(0, 0, 0, 0.15)';
-                this.elements.muteButton.onmouseout = () => this.elements.muteButton.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+            const btn = this.elements.muteButton;
 
-                if (typeof windSound !== 'undefined' && windSound && !windSound.isPlaying) {
-                    windSound.play();
-                }
+            if (STATE.isMuted) {
+                btn.innerHTML = '🔇 Audio Disabled';
+                btn.style.backgroundColor = 'rgba(255, 50, 50, 0.2)';
+                btn.style.color = '#cc0000';
+                btn.style.borderColor = '#cc0000';
+            } else {
+                btn.innerHTML = '🔊 Audio Enabled';
+                btn.style.backgroundColor = ''; // go to the CSS
+                btn.style.color = '';
+                btn.style.borderColor = '';
             }
+
             if (typeof updateWindAudio === 'function') {
                 updateWindAudio();
             }

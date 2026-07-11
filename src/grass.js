@@ -172,7 +172,7 @@ function createDynamicGrass() {
         }
 
         const tangent = precomputedTangents[bestIndex];
-        const distance = Math.sqrt(minDistSq); // Fai la radice solo per la distanza minima finale
+        const distance = Math.sqrt(minDistSq); // calculate the square root only for the final minimum distance.
 
         if (i < normalCount) {
             normalMesh.setMatrixAt(normalIdx, dummy.matrix);

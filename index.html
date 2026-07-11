@@ -111,35 +111,6 @@
                         </div>
                         <p class="help-text">Click and drag compass to change direction.</p>
                     </div>
-
-                    <button id="mute-button"
-                            style="margin-top: 15px; width: 100%; padding: 10px; cursor: pointer; background-color: rgba(0, 0, 0, 0.05); color: #111111; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 6px; font-weight: bold;"
-                            onmouseover="this.style.backgroundColor='rgba(0, 0, 0, 0.08)'"
-                            onmouseout="if(!STATE.isMuted) this.style.backgroundColor='rgba(0, 0, 0, 0.05)'">
-                        Audio Enabled
-                    </button>
-                </div>
-            </div>
-
-            <!-- Day and Night settings -->
-            <div class="window-panel">
-                <div class="window-header">
-                    <h3>DAY AND NIGHT</h3>
-                    <span class="toggle-icon">▼</span>
-                </div>
-                <div class="window-content">
-                    <div class="control-group">
-                        <div class="slider-header">
-                            <label for="time-of-day">Time of Day</label>
-                            <span id="time-of-day-val" class="badge">12:00</span>
-                        </div>
-                        <input type="range" id="time-of-day" min="0" max="24" step="0.1" value="12">
-                    </div>
-
-                    <div class="control-group checkbox-group">
-                        <input type="checkbox" id="auto-time" checked>
-                        <label for="auto-time">Auto Time Cycle</label>
-                    </div>
                 </div>
             </div>
 
@@ -191,12 +162,34 @@
         </div>
     </div>
 
-    <!-- Performance and Camera coordinates stats overlay -->
-    <div id="perf-overlay">
-        <div id="fps-counter">FPS: --</div>
-        <div id="camera-info" style="margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px; line-height: 1.5; color: #a1d1ff;">
-            Pos: X:0.00 Y:0.00 Z:0.00<br>
-            Dir: X:0.00 Y:0.00 Z:0.00
+    <!-- container for audio button -->
+    <div id="standalone-audio-container">
+        <button id="mute-button"
+                style="width: 180px; padding: 10px; cursor: pointer; background-color: rgba(245, 245, 237, 0.9); color: #111111; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 6px; font-weight: bold; box-shadow: 2px 2px 10px rgba(0,0,0,0.2);"
+                onmouseover="this.style.backgroundColor='rgba(235, 235, 227, 1)'"
+                onmouseout="if(!STATE.isMuted) this.style.backgroundColor='rgba(245, 245, 237, 0.9)'">
+            🔊 Audio Enabled
+        </button>
+    </div>
+
+    <!-- day and night container -->
+    <div id="standalone-day-night" class="window-panel">
+        <div class="window-header">
+            <h3>DAY AND NIGHT</h3>
+            <span class="toggle-icon">▼</span>
+        </div>
+        <div class="window-content">
+            <div class="control-group">
+                <div class="slider-header">
+                    <label for="time-of-day">Time of Day</label>
+                    <span id="time-of-day-val" class="badge">12:00</span>
+                </div>
+                <input type="range" id="time-of-day" min="0" max="24" step="0.1" value="12">
+            </div>
+            <div class="control-group checkbox-group">
+                <input type="checkbox" id="auto-time" checked>
+                <label for="auto-time">Auto Time Cycle</label>
+            </div>
         </div>
     </div>
 

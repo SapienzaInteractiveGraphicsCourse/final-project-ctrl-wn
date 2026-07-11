@@ -145,7 +145,7 @@ function initGraphics() {
         updateWindAudio();
     });
 
-    // It is used to unlock the audio context on the user's first click (i.e. bypass browser restrictions)
+    // It is used to unlock the audio context on the user's first click (this made to bypass browser restrictions)
     window.addEventListener('click', () => {
         if (audioListener && audioListener.context && audioListener.context.state === 'suspended') {
             audioListener.context.resume().then(() => {
@@ -779,7 +779,7 @@ function animate(now) {
 
 // Slice cross skybox textures into faces
 function loadCubeTextureFromCross(url, callback) {
-    loadingManager.itemStart(url); // Diciamo al manager che è iniziato il download
+    loadingManager.itemStart(url); // this to say to the manager to start download
 
     const img = new Image();
     img.src = url;

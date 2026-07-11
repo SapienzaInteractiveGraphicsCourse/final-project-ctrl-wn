@@ -87,7 +87,7 @@ function createWindSpline() {
         });
     }
 
-    //disattivo per ora, da capire come implementare la scia sulla spline
+    // disabling it for now. need to figure out how to implement the trail along the spline.
     // createWindTrails();
 
     if (STATE.showWindVectorField) {
