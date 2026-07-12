@@ -42,7 +42,8 @@
     <div id="main-panel">
 
         <!-- global toggle to hide/show HUD -->
-        <div id="main-panel-header" class="window-header" style="border-radius: 4px; background: rgba(0,0,0,0.08); padding: 14px 16px;">
+        <div id="main-panel-header" class="window-header"
+            style="border-radius: 4px; background: rgba(0,0,0,0.08); padding: 14px 16px;">
             <h3 style="font-size: 14px;">CONTROL PANEL</h3>
             <span id="main-toggle-icon" class="toggle-icon">▼</span>
         </div>
@@ -70,7 +71,8 @@
                         </select>
                     </div>
 
-                    <button id="regen-spline" style="margin-bottom: 15px; width: 100%; background-color: rgba(0, 120, 215, 0.1); border: 1px solid var(--accent-main); color: var(--accent-main); font-weight: bold;">
+                    <button id="regen-spline"
+                        style="margin-bottom: 15px; width: 100%; background-color: rgba(0, 120, 215, 0.1); border: 1px solid var(--accent-main); color: var(--accent-main); font-weight: bold;">
                         Regenerate Wind Spline
                     </button>
 
@@ -122,10 +124,10 @@
                 </div>
                 <div class="window-content">
                     <div class="camera-buttons">
-                        <button id="cam-orbit">Free Orbit</button>
-                        <button id="cam-turbine-1" class="active">Fixed View 1</button>
-                        <button id="cam-turbine-2">Fixed View 2</button>
-                        <button id="cam-turbine-3">Fixed View 3</button>
+                        <button id="cam-orbit">Free Camera</button>
+                        <button id="cam-turbine-1" class="active">Camera 1</button>
+                        <button id="cam-turbine-2">Camera 2</button>
+                        <button id="cam-turbine-3">Camera 3</button>
                     </div>
                 </div>
             </div>
@@ -137,7 +139,8 @@
                     <span class="toggle-icon">▼</span>
                 </div>
                 <div class="window-content">
-                    <p class="help-text" style="margin-bottom: 12px;">Press <strong>F</strong> to toggle vector field</p>
+                    <p class="help-text" style="margin-bottom: 12px;">Press <strong>F</strong> to toggle vector field
+                    </p>
                     <div class="legend-grid">
                         <div class="legend-item">
                             <div class="legend-color" style="background: #0000ff;"></div>
@@ -165,9 +168,9 @@
     <!-- container for audio button -->
     <div id="standalone-audio-container">
         <button id="mute-button"
-                style="width: 180px; padding: 10px; cursor: pointer; background-color: rgba(245, 245, 237, 0.9); color: #111111; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 6px; font-weight: bold; box-shadow: 2px 2px 10px rgba(0,0,0,0.2);"
-                onmouseover="this.style.backgroundColor='rgba(235, 235, 227, 1)'"
-                onmouseout="if(!STATE.isMuted) this.style.backgroundColor='rgba(245, 245, 237, 0.9)'">
+            style="width: 180px; padding: 10px; cursor: pointer; background-color: rgba(245, 245, 237, 0.9); color: #111111; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 6px; font-weight: bold; box-shadow: 2px 2px 10px rgba(0,0,0,0.2);"
+            onmouseover="this.style.backgroundColor='rgba(235, 235, 227, 1)'"
+            onmouseout="if(!STATE.isMuted) this.style.backgroundColor='rgba(245, 245, 237, 0.9)'">
             Audio Enabled
         </button>
     </div>
