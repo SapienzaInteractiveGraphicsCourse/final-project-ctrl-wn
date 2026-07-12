@@ -89,12 +89,12 @@ const UI = {
             const btn = this.elements.muteButton;
 
             if (STATE.isMuted) {
-                btn.innerHTML = '🔇 Audio Disabled';
+                btn.innerHTML = 'Audio Disabled';
                 btn.style.backgroundColor = 'rgba(255, 50, 50, 0.2)';
                 btn.style.color = '#cc0000';
                 btn.style.borderColor = '#cc0000';
             } else {
-                btn.innerHTML = '🔊 Audio Enabled';
+                btn.innerHTML = 'Audio Enabled';
                 btn.style.backgroundColor = ''; // go to the CSS
                 btn.style.color = '';
                 btn.style.borderColor = '';
