@@ -1,35 +1,35 @@
 // here there is the rendering cycle after calling all the other js files
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => { //DOMContentLoaded: Questo evento si attiva non appena il browser ha analizzato completamente l'HTML della pagina, senza attendere il caricamento di immagini, fogli di stile o risorse esterne pesanti.
     // loading assets here
-    isAssetsLoaded = false;
+    isAssetsLoaded = false; //Reset dello stato: Imposta la variabile globale di caricamento delle risorse (isAssetsLoaded) a false
 
-    initGraphics();
-    generateTextures();
-    createEnvironment();
-    createWindSpline();
-    createTurbines();
-    createRocks();
-    createDynamicGrass();
+    initGraphics(); //Configura la scena, la telecamera, il motore WebGL e l'audio.
+    generateTextures(); //Carica i file immagine per la vegetazione e gli effetti visivi.
+    createEnvironment(); //Crea l'illuminazione, il cielo interattivo e il terreno geometrico
+    createWindSpline(); //Genera la curva del vento e le foglie/petali svolazzanti.
+    createTurbines(); //Dispone i mulini e le turbine eoliche.
+    createRocks(); //Posiziona i massi rocciosi.
+    createDynamicGrass(); //Genera i 25.000 fili d'erba istanziati.
     if (typeof UI !== 'undefined') {
         UI.init();
     }
 
     // the initialisation is done
-    isAppInitialized = true;
+    isAppInitialized = true; //Imposta il flag di inizializzazione (isAppInitialized = true) e richiama checkAndHideLoadingScreen() per nascondere la schermata di caricamento se tutti gli elementi sono pronti.
     checkAndHideLoadingScreen();
 
-    animate();
+    animate(); //Chiama la funzione animate() per far partire il ciclo di rendering continuo
 });
 
 
 // here we load billboard sprites and trails
-function generateTextures() {
-    leafTexture = textureLoader.load('textures/billboar_grass_v2.png');
-    leafTexture.wrapS = THREE.ClampToEdgeWrapping;
+function generateTextures() { //Questa funzione carica le texture utilizzate per gli elementi bidimensionali (billboard) e gli effetti visivi:
+    leafTexture = textureLoader.load('textures/billboar_grass_v2.png'); //Carica le immagini per l'erba, i fiori, i petali volanti e il bagliore dei fari notturni delle turbine
+    leafTexture.wrapS = THREE.ClampToEdgeWrapping; //wrapS e wrapT impostati a THREE.ClampToEdgeWrapping impediscono alle texture di ripetersi sui bordi.
     leafTexture.wrapT = THREE.ClampToEdgeWrapping;
-    leafTexture.encoding = THREE.sRGBEncoding;
-    leafTexture.generateMipmaps = false;
+    leafTexture.encoding = THREE.sRGBEncoding; //encoding = THREE.sRGBEncoding garantisce una corretta resa cromatica ad alta gamma dinamica.
+    leafTexture.generateMipmaps = false; //enerateMipmaps = false e i filtri LinearFilter evitano la generazione di texture a bassa risoluzione per le distanze, riducendo l'uso della memoria della scheda video.
     leafTexture.minFilter = THREE.LinearFilter;
     leafTexture.magFilter = THREE.LinearFilter;
 
@@ -57,20 +57,20 @@ function generateTextures() {
 }
 
 // this is the setup for threejs, for the orbitcontrols and for the audio
-function initGraphics() {
+function initGraphics() { //(Inizializzazione WebGL e Audio)
     const container = document.getElementById('canvas-container');
-
+    //Scena e Nebbia: Istanzia la scena 3D con uno sfondo blu scuro e applica una nebbia esponenziale (THREE.FogExp2) che si infittisce gradualmente con la distanza per mascherare il ritaglio degli oggetti lontani.
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a141e);
     scene.fog = new THREE.FogExp2(0x0a141e, 0.007);
-
+    //Telecamera: Crea una telecamera prospettica (THREE.PerspectiveCamera) posizionandola nel punto di partenza della prima inquadratura.
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
     if (STATE.currentCamera === 'turbine-1') {
         camera.position.set(3.84, 10.26, 117.86);
     } else {
         camera.position.set(0, 40, 100);
     }
-
+    //Renderer WebGL: Configura il motore di rendering con antialiasing attivo, ombre soffici abilitate (THREE.PCFSoftShadowMap) e mappatura tonale cinematografica (THREE.ACESFilmicToneMapping).
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -81,7 +81,7 @@ function initGraphics() {
     container.appendChild(renderer.domElement);
 
     renderer.outputEncoding = THREE.sRGBEncoding;
-
+    //Controlli Orbita: Configura THREE.OrbitControls per consentire all'utente di ruotare la visuale tramite trascinamento, limitando i movimenti per evitare che la telecamera scenda sotto il terreno
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
@@ -107,6 +107,8 @@ function initGraphics() {
     window.addEventListener('resize', onWindowResize);
 
     // the zooming moves camera target forward
+    //Gestione dello Zoom con mouse (Evento wheel):
+    //Se la telecamera libera("orbit") è attiva, la rotazione della rotella del mouse non esegue uno zoom ottico standard, ma sposta fisicamente la posizione della telecamera in avanti o indietro lungo la sua direzione di puntamento.Controlla inoltre che la telecamera rimanga sempre ad almeno 2 metri sopra l'altezza del terreno calcolata da getTerrainHeight.
     window.addEventListener('wheel', (event) => {
         if (STATE.currentCamera === 'orbit') {
             const moveSpeed = 3.5;
@@ -127,7 +129,8 @@ function initGraphics() {
             }
         }
     });
-
+    //Inizializzazione Audio 3D:
+    //Istanzia un THREE.AudioListener(il "microfono" virtuale associato alla telecamera) e tre tracce audio(windSound, grassSound, turbineSound).Carica asincronamente i file.mp3 ed esegue un listener sull'evento click della finestra per riattivare il contesto audio (richiesto dai protocolli di sicurezza dei browser moderni).
     audioListener = new THREE.AudioListener();
     camera.add(audioListener);
 
@@ -166,12 +169,13 @@ function initGraphics() {
     }, { once: true });
 }
 
+//updateWindAudio()(Modulazione sonora dinamica)
 // update audio, increase volume, pitch, speed 
 function updateWindAudio() {
     const speedFactor = STATE.windSpeed / 100;
 
     // if the application has changed, reset all volumes
-    if (STATE.isMuted) {
+    if (STATE.isMuted) { //Se l'app è silenziata (STATE.isMuted), azzera tutti i volumi.
         if (windSound && windSound.buffer) windSound.setVolume(0);
         if (grassSound && grassSound.buffer) grassSound.setVolume(0);
         if (turbineSound && turbineSound.buffer) turbineSound.setVolume(0);
@@ -180,9 +184,10 @@ function updateWindAudio() {
 
     // wind sound (always active by default) to translate
     if (windSound && windSound.buffer) {
-        if (!windSound.isPlaying) {
+        if (!windSound.isPlaying) { 
             windSound.play();
         }
+        //Vento: Sempre attivo; il volume e la tonalità (pitch/velocità di riproduzione) aumentano linearmente con l'aumentare della velocità del vento globale.
         const windVolume = STATE.windSpeed === 0 ? 0.05 : 0.1 + (speedFactor * 0.9);
         windSound.setVolume(windVolume);
 
@@ -191,6 +196,7 @@ function updateWindAudio() {
     }
 
     // grass sound
+    //Erba: Il fruscio dell'erba si attiva solo se la telecamera attiva è la numero 1 (ad altezza prato).
     if (grassSound && grassSound.buffer) {
         if (!grassSound.isPlaying) {
             grassSound.play();
@@ -207,6 +213,7 @@ function updateWindAudio() {
     }
 
     // turbine sound
+    //Turbina: Il ronzio del generatore si attiva solo se la telecamera attiva è la numero 2 (posizionata sulla navicella della turbina). Se la velocità del vento è inferiore al 10% o superiore al 90%, il suono si spegne poiché le pale si fermano per sicurezza.
     if (turbineSound && turbineSound.buffer) {
         if (!turbineSound.isPlaying) {
             turbineSound.play();
@@ -228,14 +235,16 @@ function updateWindAudio() {
     }
 }
 
-function onWindowResize() {
+//onWindowResize()(Adattamento dello schermo)
+function onWindowResize() { //Viene richiamata quando l'utente ridimensiona la finestra del browser. Ricalcola le proporzioni della telecamera (aspect) e aggiorna la matrice di proiezione per evitare che gli elementi 3D appaiano deformati o schiacciati.
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 // lights, terrain geometry and skybox blending shaders
-function createEnvironment() {
+//(Luci, Cielo Dinamico e Terreno con Shader)
+function createEnvironment() { //Luci: Una luce emisferica (HemisphereLight) simula la luce ambientale del cielo, mentre una luce direzionale (DirectionalLight) proietta ombre nitide per simulare il sole o la luna.
     hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
     hemiLight.position.set(0, 200, 0);
     scene.add(hemiLight);
@@ -253,6 +262,7 @@ function createEnvironment() {
     sunLight.shadow.mapSize.height = 2048;
     scene.add(sunLight);
 
+    //Istanzia un cubo gigante attorno alla mappa associato a un materiale shader personalizzato (THREE.ShaderMaterial). Questo shader riceve in input tre texture cubiche (Giorno, Tramonto e Notte). Nel fragment shader, interpola i colori di queste texture in base a tre pesi dinamici (mixDay, mixSunset, mixNight) calcolati dall'ora corrente.
     const placeholderCube = new THREE.CubeTexture();
     skyboxMat = new THREE.ShaderMaterial({
         uniforms: {
@@ -334,6 +344,7 @@ function createEnvironment() {
     loadCubeTextureFromCross('textures/skybox_sunset.png', (tex) => { skyboxMat.uniforms.tSunset.value = tex; });
     loadCubeTextureFromCross('textures/skybox_night.png', (tex) => { skyboxMat.uniforms.tNight.value = tex; });
 
+    //Genera un piano di 240*240 metri suddiviso in una griglia di 120*120 tasselli. Applica ai vertici la stessa identica funzione matematica di altezza usata in terrain.js e calcola i vettori normali per gestire la risposta alla luce.
     const terrainSize = 240;
     const terrainGeo = new THREE.PlaneGeometry(terrainSize, terrainSize, 120, 120);
     terrainGeo.rotateX(-Math.PI / 2);
@@ -353,6 +364,8 @@ function createEnvironment() {
         pos.setY(i, y);
     }
     terrainGeo.computeVertexNormals();
+
+    //Modifica a basso livello il materiale standard del terreno di Three.js. Inietta codice GLSL personalizzato per miscelare due texture di dettaglio (terrain_dense.jpg e terrain_patchy.jpg) calcolando un rumore procedurale multi-ottava (FBM - Fractal Brownian Motion) basato sulla pendenza del terreno (vTerrainNormal) e sulla quota d'altezza.
 
     const terrainTexture1 = textureLoader.load('textures/terrain_dense.jpg');
     terrainTexture1.wrapS = THREE.RepeatWrapping;
@@ -455,13 +468,15 @@ function createEnvironment() {
 }
 
 // camera transition tweens
+//(Transizioni fluide della telecamera)
+//Gestisce il passaggio tra le diverse telecamere preimpostate tramite interpolazioni di movimento regolate da Tween.js:
 function setupCameraView() {
     controls.enabled = (STATE.currentCamera === 'orbit');
 
     const targetBillboard = (STATE.currentCamera === 'orbit') ? 0.0 : 1.0;
     new TWEEN.Tween(STATE)
-        .to({ billboardFactor: targetBillboard }, 1500)
-        .easing(TWEEN.Easing.Cubic.Out)
+        .to({ billboardFactor: targetBillboard }, 1500) //Seleziona le coordinate di arrivo e il punto di puntamento (lookAt) a seconda della telecamera scelta.
+        .easing(TWEEN.Easing.Cubic.Out) //Configura automaticamente la scena per l'analisi tecnica, disattivando il ciclo temporale, impostando l'ora di mezzogiorno (massima luminosità) e attivando la visualizzazione del campo vettoriale e della spline.
         .start();
 
     let targetPos = { x: 0, y: 0, z: 0 };
@@ -537,9 +552,11 @@ function setupCameraView() {
 }
 
 // global day and night interpolation
+//updateDayNightCycle(dt) (Simulazione astronomica e atmosferica)
+//Gestisce lo scorrere del tempo e la risposta atmosferica:
 function updateDayNightCycle(dt) {
     if (STATE.autoTime) {
-        STATE.timeOfDay += dt * 0.15;
+        STATE.timeOfDay += dt * 0.15;  //Se l'avanzamento automatico è attivo, incrementa l'ora del giorno (STATE.timeOfDay) in base al tempo trascorso (dt).
         if (STATE.timeOfDay >= 24) STATE.timeOfDay = 0;
         if (typeof UI !== 'undefined') {
             UI.updateTimeValueText(STATE.timeOfDay);
@@ -549,7 +566,7 @@ function updateDayNightCycle(dt) {
 
     const angle = (STATE.timeOfDay / 24) * Math.PI * 2 - Math.PI / 2;
     const radius = 150;
-    sunLight.position.set(
+    sunLight.position.set( //Orbita solare: Tramite funzioni trigonometriche di seno e coseno basate sull'angolo dell'ora corrente, calcola la posizione ad arco della luce solare (sunLight) che sorge a est e tramonta a ovest.
         Math.cos(angle) * radius,
         Math.sin(angle) * radius,
         30
@@ -560,6 +577,7 @@ function updateDayNightCycle(dt) {
 
     // night -> sunset 4-6, sunset -> day 6-8
     // day -> sunset 16-18, sunset -> night 18-20
+    //Fattori di Mix: Determina la percentuale di miscelazione dei cieli (es: tra le 16:00 e le 18:00 sfuma dal giorno al tramonto).
     if (time >= 4.0 && time < 6.0) {
         const f = (time - 4.0) / 2.0;
         mixNight = 1.0 - f;
@@ -583,6 +601,7 @@ function updateDayNightCycle(dt) {
     }
 
     // publishh to STATE so other modules can read the mix values
+    //Interpolazione dei Colori: Effettua un'interpolazione lineare (lerp) per sfumare i colori della nebbia, dello sfondo, della luce ambientale e solare tra tre preset canonici di colore (Giorno, Tramonto, Notte), regolando anche l'intensità luminosa globale.
     STATE.mixDay = mixDay;
     STATE.mixSunset = mixSunset;
     STATE.mixNight = mixNight;
@@ -651,15 +670,17 @@ let lastTime = 0;
 let frameCount = 0;
 let fpsTimer = 0;
 
+//uesta è la funzione che viene eseguita continuamente per aggiornare la simulazione e produrre ogni singolo fotogramma:
 function animate(now) {
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animate); //requestAnimationFrame: Dice al browser di richiamare la funzione animate prima di eseguire il successivo ciclo di ridisegno dello schermo.
+
 
     if (!now) now = 0;
-    const dt = Math.min((now - lastTime) / 1000, 0.1);
+    const dt = Math.min((now - lastTime) / 1000, 0.1); //Calcolo del Delta Time (dt): Misura il tempo effettivo trascorso tra il fotogramma precedente e quello attuale, stabilizzando la velocità delle animazioni fisiche indipendentemente dal frame rate del computer dell'utente.
     lastTime = now;
 
     frameCount++;
-    fpsTimer += dt;
+    fpsTimer += dt; //Calcolo FPS: Conta i fotogrammi renderizzati ogni secondo per aggiornare il valore nell'HUD.
     if (fpsTimer >= 1.0) {
         STATE.fps = frameCount;
         if (typeof UI !== 'undefined') {
@@ -672,12 +693,13 @@ function animate(now) {
     TWEEN.update();
     updateDayNightCycle(dt);
 
-    if (grassMesh) {
+    if (grassMesh) { //Aggiornamento Shader Erba: Invia il tempo di clock globale all'erba per farla oscillare e imposta il valore del billboard.
         grassMesh.material.userData.uTime.value = clock.getElapsedTime();
         grassMesh.material.userData.uBillboard.value = STATE.billboardFactor;
         grassMesh.material.userData.uSigma.value = STATE.windSigmaThreshold;
     }
 
+    //Campo Vettoriale: Se attivo, rigenera le frecce direzionali del vento ogni 0.25 secondi per riflettere i cambiamenti di intensità o direzione.
     if (STATE.showWindVectorField) {
         const currentTime = clock.getElapsedTime();
         if (currentTime - STATE.lastVectorUpdateTime > 0.25) {
@@ -686,6 +708,7 @@ function animate(now) {
         }
     }
 
+    //Fisica delle Turbine: Cicla l'array delle turbine e dei mulini richiamando il rispettivo metodo .update().
     turbines.forEach(t => {
         t.update(dt, windVectorGlobal, STATE.windSpeed);
     });
@@ -693,38 +716,66 @@ function animate(now) {
     const windSpeedFactor = STATE.windSpeed / 100;
 
     // Spiral animations of leaf/petal objects along spline
-    windLeaves.forEach(leaf => {
-        leaf.t += dt * 0.05 * leaf.speedMultiplier * (0.1 + windSpeedFactor * 2.0);
-        if (leaf.t > 1) {
-            leaf.t = 0;
+    //Animazione dei Petali (Spirale sulla Spline):
+    //Muove individualmente ciascun petalo volante lungo il percorso tridimensionale della spline.
+    //La coordinata t appartenente a[0,1] del petalo viene incrementata; il codice calcola la posizione spaziale sulla curva, la tangente, la normale e la binormale, applicando poi uno spostamento sinusoidale per simulare un moto a spirale attorno al flusso d'aria.
+    windLeaves.forEach(leaf => { //variabile temporale t per avanzamento lineare lungo il percorso, mentre dt stabilisce lo scorrere del tempo effettivo
+        leaf.t += dt * 0.05 * leaf.speedMultiplier * (0.1 + windSpeedFactor * 2.0); //per ogni petalo a ogni fotogramma, incremento della posizione lungo la spline, usando un parametro t tra 0 e 1
+        if (leaf.t > 1) { //sppedMultiplayer diversifica la velocità del petalo
+            leaf.t = 0; //windSpeedFactor per la velocità impostata dall'utente sull'HUD
         }
 
+        //CAMPIONAMETO SPLINE E CALCOLO VETTORI ORTOGONALI
+        //cordinate 3d del punto su spline corrispondente al valore di t
         const position = splinePath.getPointAt(leaf.t);
+        //vettore tangente del punto della spline e lo normalizza
         const tangent = splinePath.getTangentAt(leaf.t).normalize();
+        //vettore up di base inerente a asse y
         const upTemp = new THREE.Vector3(0, 1, 0);
+        //vettore normale tramite prototto vettoriale tra tangent e vettore up
         const normal = new THREE.Vector3().crossVectors(tangent, upTemp).normalize();
+        //vettore binormale tramite prodotto vettoriale tra la tangente e la normale appena calcolata
         const binormal = new THREE.Vector3().crossVectors(tangent, normal).normalize();
+        //COSI ABBIAMO SISTEMA DI RIFERIMENTO BASATI SULLA FOGLIA, CON NORMAL E BINORMAL CHE SONO VETTORI PERPENDICOLARI ALLA DIREZIONE DEL VENTO NEL PUNTO
 
+
+        //CALCOLO ORBITA A SPIRALE
+        //angolo di rotazione in radianti basato sul perforso t, sul tempo corrente e su offset casuale
         const angle = leaf.t * Math.PI * 10 + clock.getElapsedTime() * 3.5 + leaf.oscOffset;
+        //distanza/raggio dal centro della spline  ela si da oscillare sinusoidalmente nel tempo
         const radius = 4.0 + Math.sin(clock.getElapsedTime() * 1.5 + leaf.oscOffset) * 1.5;
-
+        //coordinate polari (angolo e raggio) convertite in coordinate cartesiani locali
         const spiralX = Math.cos(angle) * radius;
         const spiralY = Math.sin(angle) * radius;
+        //COSI DETERMINAMO TRAIETTORIA CERCOLARE ATTORINO AL FLUSSO DEL VENTO, CON Math.sin e Math.cos CHE PROIETTANO LA ROTAZIONE SUI VETTORI LOCALI MENTRE OSCILLAZIONE DEL RAGGIO RADIUSO FA SI CHE LA SPIRALE SI ALLARGHI E SI STRINGA NEL TEMPO
 
+        //Alziamo la quota base per far si che le foglie non tocchino il terreno
         position.y += 5.0;
+        //spostiamo lateralmente la coordinata lungo il vettore normale di una distanza pari a spiralX
         position.addScaledVector(normal, spiralX);
+        //spostiamo lateralmente la coordinata lungo il vettore normale di una distanza pari a spiralY
         position.addScaledVector(binormal, spiralY);
+        //aggiungiamo micro oscillazione
         position.y += Math.sin(clock.getElapsedTime() * 5.0 + leaf.oscOffset) * 0.15;
 
+        //coordinata finale della posizione reale copiata
         leaf.mesh.position.copy(position);
 
+        //calcoliamo un punto di puntamento davanti alla foglia lungo la direzione tangente
         const targetLook = new THREE.Vector3().copy(position).add(tangent);
+        //orientiamo la mesh per far si che guardi verso il punto calcolato
         leaf.mesh.lookAt(targetLook);
+        //ruota la mesh di 90 gradi per allineare l'asse del foglio 3d
         leaf.mesh.rotateX(Math.PI / 2);
+        //rotazioni di rollio e beccheggio su assi locali basate sul tempo che scorre
         leaf.mesh.rotateY(clock.getElapsedTime() * 2.0 + leaf.oscOffset);
         leaf.mesh.rotateZ(clock.getElapsedTime() * 1.5);
 
+        //fattore di scala casuale per la gometria del petalo
         leaf.mesh.scale.setScalar(leaf.randomScale);
+        //COSI  L'OGGETTO VIENE AGGIORNATO E RESO VISIBILE A SCHERMO, PER SPOSTARLO NELLA COORDINATA
+        //ESATTA E IL PETALO VADA AVANTI LUNGO LA SPLINE CON LOOKAT E LO FA AVVITARE SU SE STESSO 
+        //IN BASE AL TE, PO DI ESECUZIONE
     });
 
     // Wind trail animations are NOT active because of problems
@@ -767,6 +818,7 @@ function animate(now) {
     });
     */
 
+    //Aggiornamento Skybox: Sposta la mesh del cielo gigante centrandola esattamente sulla posizione corrente della telecamera, impedendo all'utente di "uscire" visivamente dai confini del cielo.
     if (skyboxMesh) {
         skyboxMesh.position.copy(camera.position);
     }
@@ -786,11 +838,12 @@ function animate(now) {
         camera.getWorldDirection(lookDir);
         UI.updateCameraInfo(camera.position, lookDir);
     }
-
+    //Render Pass: Esegue il calcolo finale e disegna l'immagine a schermo tramite renderer.render(scene, camera).
     renderer.render(scene, camera);
 }
 
 // slice cross skybox textures into faces
+//È una funzione di utilità che risolve una problematica comune del caricamento di cubemap:
 function loadCubeTextureFromCross(url, callback) {
     loadingManager.itemStart(url); // this to say to the manager to start download
 
@@ -798,7 +851,7 @@ function loadCubeTextureFromCross(url, callback) {
     img.src = url;
     img.onload = () => {
         const w = img.width;
-        const faceSize = w / 4;
+        const faceSize = w / 4; //Carica una singola immagine di sfondo cielo disposta a forma di croce (layout standard per skybox cubiche)
         const canvases = [];
 
         const faceCoords = [
@@ -809,7 +862,7 @@ function loadCubeTextureFromCross(url, callback) {
             { x: 1, y: 1 },
             { x: 3, y: 1 }
         ];
-
+        //Utilizza un elemento <canvas> invisibile bidimensionale per ritagliare l'immagine originale in 6 porzioni quadrate corrispondenti alle 6 facce del cubo (Destra, Sinistra, Sopra, Sotto, Davanti, Dietro).
         for (let i = 0; i < 6; i++) {
             const canvas = document.createElement('canvas');
             canvas.width = faceSize;
@@ -824,6 +877,7 @@ function loadCubeTextureFromCross(url, callback) {
             canvases.push(canvas);
         }
 
+        //Assembla queste facce in un oggetto THREE.CubeTexture compatibile con i materiali di Three.js e restituisce la texture tramite una funzione di callback.
         const cubeTex = new THREE.CubeTexture(canvases);
         cubeTex.needsUpdate = true;
 

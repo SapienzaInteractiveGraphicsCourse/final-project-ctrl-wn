@@ -1,12 +1,15 @@
 // terrain height calculation function
-function getTerrainHeight(x, z) {
-    let y = Math.sin(x * 0.02) * Math.cos(z * 0.02) * 12;
-    y += Math.sin(x * 0.05) * 3;
-    y += Math.cos(z * 0.08) * 1.5;
+function getTerrainHeight(x, z) { //Questa funzione calcola l'altezza esatta Y del terreno in qualsiasi coordinata bidimensionale XZ della mappa. Viene utilizzata sia per generare la mesh geometrica del terreno, sia per posizionare erba, rocce e turbine alla giusta altezza.
+    //L'altitudine iniziale viene determinata tramite la sovrapposizione di tre onde sinusoidali e cosinusoidali
+    let y = Math.sin(x * 0.02) * Math.cos(z * 0.02) * 12; //Onde primarie: Creano la macro-struttura delle colline con ampiezza massima di 12 metri e una frequenza molto bassa (0.02)
+    y += Math.sin(x * 0.05) * 3; //Onde secondarie: Aggiungono dislivelli intermedi (ampiezza 3 metri, frequenza 0.05).
+    y += Math.cos(z * 0.08) * 1.5; //Onde terziarie: Generano una micro-rugosità superficiale per evitare che il terreno appaia perfettamente liscio (ampiezza 1,5 metri, frequenza 0.08).
 
-    const distFromCenter = Math.sqrt(x * x + z * z);
-    if (distFromCenter > 100) {
-        const factor = Math.min((distFromCenter - 100) / 50, 1);
+    const distFromCenter = Math.sqrt(x * x + z * z); //Tramite il teorema di Pitagora, viene calcolata la distanza radiale del punto dal centro della mappa (0,0)
+    if (distFromCenter > 100) { //Se la distanza supera i 100 metri:
+        //il codice calcola un fattore di transizione lineare (factor) che va da 0 a 1 nell'arco dei successivi 50 metri (fino a raggiungere il bordo massimo a 150 metri).
+        const factor = Math.min((distFromCenter - 100) / 50, 1); 
+        //L'altezza y viene ridotta progressivamente fino a un massimo di 15 metri (factor * 15). Questa operazione crea una scarpata/depressione lungo i bordi della mappa, impedendo che i confini del terreno fluttuino nel vuoto rispetto allo sfondo scuro del cielo.
         y -= factor * 15;
     }
     return y;

@@ -1,14 +1,15 @@
 // global variables and configuration state
-let audioListener, windSound, grassSound, turbineSound;
-let beaconGlowTexture;
+let audioListener, windSound, grassSound, turbineSound; //variabili per l'audio
+let beaconGlowTexture; //variabili della texture della luce dei windmill
 
 // loading gate flags – the loading screen hides only when BOTH are true
 let isAssetsLoaded = false;
 let isAppInitialized = false;
 
+//FAI SCOMPARIRE COL FADE LA SCHERMATA DI CARICAMENTO QUANDO HAI CARICATO TUTTI GLI ELEMENTI E SE L'APP è STATA GIà INIZIALIZZATA
 function checkAndHideLoadingScreen() {
-    if (!isAssetsLoaded || !isAppInitialized) return;
-
+    if (!isAssetsLoaded || !isAppInitialized) return; // SE NON SONO STATI CARICATI TUTTI GLI ELEMENTI E SE L'APP NON è STATA GIà INIZIALIZZATA, NON NASCONDI ANCORA LA SCHERMATA DI CARICAMENTO CIOE NON ESEGUI LE RIGHE DI CODICE SUCCESSIVE
+    // SE INVECE SONO STATI CARICATI TUTTI GLI ELEMENTI E SE L'APP è STATA GIà INIZIALIZZATA ALLORA ESEGUI QUESTO CODICE SOTTO CHE FA IL FADE/SCOMPARE IL CARICAMENTO
     clearTimeout(loadingTimeout);
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen && !loadingScreen.classList.contains('fade-out')) {
@@ -66,10 +67,10 @@ loadingManager.onError = function (url) {
 const gltfLoader = new THREE.GLTFLoader(loadingManager);
 const textureLoader = new THREE.TextureLoader(loadingManager);
 
-// turbine textures configuration
+// turbine textures  CARICHIAMO TUTTE LE TEXTURE
 const turbineTextures = {
     Foundation: {
-        map: textureLoader.load('textures/Foundation_COL.png'),
+        map: textureLoader.load('textures/Foundation_COL.png'), //colore base
         metalnessMap: textureLoader.load('textures/Foundation_METALLIC.png'),
         normalMap: textureLoader.load('textures/Foundation_NORMAL.png'),
         roughnessMap: textureLoader.load('textures/Foundation_ROUGH.png')
@@ -168,7 +169,7 @@ Object.values(rockTextures).forEach(rockType => {
     });
 });
 
-// this is the global state configuration
+// this is the global state configuration VARIABILI GLOBALI DI STATO CHE CAMBIANO IN TEMPO REALE IN BASE A COSA ACCADE
 const STATE = {
     windMode: 'global',
     windSpeed: 40,
@@ -191,7 +192,7 @@ const STATE = {
 
 const windVectorGlobal = new THREE.Vector3(0, 0, -1);
 
-// scene elements references
+// scene elements references    VARIABILI GLOBALI CHE IMMAGAZZINANO RIFERIMENTI A ELEMENTI UTILI
 let scene, camera, renderer, controls;
 let terrain, grassMesh, grassGeo, splinePath, splineHelper;
 let windLeaves = [];

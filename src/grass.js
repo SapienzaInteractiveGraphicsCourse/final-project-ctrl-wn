@@ -1,41 +1,49 @@
 // instanced grass rendering with vertex displacement shaders
 
 function createDynamicGrass() {
-    const w = 2.5;
+    const w = 2.5; //qui definisci altezza e spessore
     const h = 2.5;
 
-    grassGeo = new THREE.PlaneGeometry(w, h, 1, 3);
-    grassGeo.translate(0, h / 2, 0);
+    grassGeo = new THREE.PlaneGeometry(w, h, 1, 3); //qua definisci un plane. Con una suddivisione nell'asse orizzontale e 3 nell'asse verticale, cioe il plane è tagliato in 3 parti
+    //esempio
+    /*
+    _
+    _
+    _
+    */
+    grassGeo.translate(0, h / 2, 0); //cosi ti sposti il pivot che di base sta al centro della geometria per threejs, lo metti in basso
 
-    const count = 25000;
+    const count = 25000; //definisci 25000 elementi
     const flowerCount = Math.floor(count / 5);
     const normalCount = count - flowerCount;
 
     const normalWindDir = [];
-    const normalWindDist = [];
+    const normalWindDist = []; //definisci quanti sono i fiori e quanti sono l'erba
     const flowerWindDir = [];
     const flowerWindDist = [];
 
-    const sharedUserData = {
-        uTime: { value: 0 },
-        uWindSpeed: { value: STATE.windSpeed / 100 },
-        uWindDirection: { value: windVectorGlobal },
-        uWindMode: { value: 0 },
-        uBillboard: { value: STATE.billboardFactor },
-        uSigma: { value: STATE.windSigmaThreshold }
-    };
+    //direzione del vento, distanza sia per i fiori sia per l'erba
 
+    const sharedUserData = { //contenitori delle variabili uniform, usate sia nella cpu, sia nella gpu
+        uTime: { value: 0 }, //tempo 
+        uWindSpeed: { value: STATE.windSpeed / 100 }, //velocita in centesimi
+        uWindDirection: { value: windVectorGlobal }, //vettore
+        uWindMode: { value: 0 }, //booleana da 0 a 1 se è il spline o globale
+        uBillboard: { value: STATE.billboardFactor }, //valore dello state, se gli elementi devono muoversi e stare davanti alla telelcamera
+        uSigma: { value: STATE.windSigmaThreshold } //parametro di threshold
+    };
+    //ci sono i materiali o standard o di phong 
     const grassMat = new THREE.MeshPhongMaterial({
-        map: leafTexture,
-        side: THREE.DoubleSide,
+        map: leafTexture, //texture foglia
+        side: THREE.DoubleSide, //renderizzi da entrambi i lati perche se no fa il faceculling
         transparent: false,
         alphaTest: 0.5,
         shininess: 0
     });
-    grassMat.userData = sharedUserData;
+    grassMat.userData = sharedUserData; //materiale dell'erba te la salvi in sharedUserData, passi il parametro poi alla cpu
 
     const flowerMat = new THREE.MeshPhongMaterial({
-        map: flowerTexture,
+        map: flowerTexture, //stessa cosa per i fiori
         side: THREE.DoubleSide,
         transparent: false,
         alphaTest: 0.5,
@@ -43,7 +51,7 @@ function createDynamicGrass() {
     });
     flowerMat.userData = sharedUserData;
 
-    const compileShader = (shader) => {
+    const compileShader = (shader) => {//con la compilazione definisci lo shader. Per ogni variabile dello shader gli dici i parametri che hai passato alla cpu, perche i shareduserdata sono variabili UNIFORM cioe identici per ogni vertex shader di ogni foglia
         shader.uniforms.uTime = sharedUserData.uTime;
         shader.uniforms.uWindSpeed = sharedUserData.uWindSpeed;
         shader.uniforms.uWindDirection = sharedUserData.uWindDirection;
@@ -51,6 +59,11 @@ function createDynamicGrass() {
         shader.uniforms.uBillboard = sharedUserData.uBillboard;
         shader.uniforms.uSigma = sharedUserData.uSigma;
 
+
+        //col vertex shader prendi il vertex shader di three js e gli aggiungi codice extra, questo è il vertex shader custom
+        //i primi 6 sono per qualsiasi foglia
+        //gli ultimi sono attribute cioe validi per quella foglia
+        //varying è il fattore di altezza, lo passi dal vertex shader al fragment
         shader.vertexShader = `
             uniform float uTime;
             uniform float uWindSpeed;
@@ -63,7 +76,10 @@ function createDynamicGrass() {
             attribute float instanceWindDist; 
             varying float vHeightFactor; 
         ` + shader.vertexShader;
+        //quindi hai vertex shader custom + velori per threejs
 
+
+        //valore per le foglie associate ai vertici
         const beginVertexReplace = `
             vec3 transformed = vec3( position );
             vHeightFactor = position.y / 2.5; 

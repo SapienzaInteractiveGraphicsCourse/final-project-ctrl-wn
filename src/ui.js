@@ -4,7 +4,12 @@ const UI = {
     elements: {},
 
     // cache elements and attach event listeners
-    init() {
+    init() { //CONFIGURAZIONE INTERFACCIA GRAIFCA
+        /*
+        Nella prima parte, init() interroga la pagina HTML per trovare tutti gli elementi con cui l'utente interagirà
+        o che mostreranno dati dinamici (come i badge dei valori o il contatore FPS).
+        Memorizza questi riferimenti all'interno dell'oggetto vuoto this.elements:
+        */
         this.elements.speedSlider = document.getElementById('wind-speed');
         this.elements.speedVal = document.getElementById('wind-speed-val');
         this.elements.modeSelect = document.getElementById('wind-mode');
@@ -23,7 +28,16 @@ const UI = {
         this.elements.cameraInfo = document.getElementById('camera-info');
         this.elements.muteButton = document.getElementById('mute-button');
         this.elements.regenSplineBtn = document.getElementById('regen-spline');
-
+        /*
+        Questa è una tecnica standard di ottimizzazione nello sviluppo web.
+        Eseguire ricerche nel DOM tramite funzioni come document.getElementById() è un'operazione computazionalmente onerosa per il browser. 
+        Cercando tutti gli elementi una sola volta all'avvio e salvandone il riferimento in memoria (this.elements),
+        l'applicazione può aggiornare testi e grafiche durante il ciclo di rendering (che gira a 60 FPS) in modo immediato, senza alcun rallentamento.
+        */
+       /*
+       Una volta memorizzati i riferimenti agli elementi HTML, init() richiama in sequenza una serie di funzioni interne 
+       (configurate più in basso nello stesso file) per rendere interattivi i controlli:
+       */
         this.setupMuteButtonListener();
         this.setupWindSpeedListener();
         this.setupWindModeListener();
@@ -37,6 +51,12 @@ const UI = {
         this.setupRegenSplineListener();
         this.setupAccordions();
         this.setupGlobalToggle();
+
+        /*
+        In sintesi, senza la chiamata a UI.init(), l'interfaccia grafica rimarrebbe un semplice foglio statico sopra la simulazione 3D: 
+        i pulsanti non farebbero nulla, gli slider non cambierebbero i valori del vento o dell'ora e i testi informativi non verrebbero
+        aggiornati durante l'esecuzione del programma.
+        */
     },
 
     // collapsible accordion panels
@@ -81,7 +101,7 @@ const UI = {
         });
     },
 
-    // audio toggle
+    // audio toggle  BOTTONE DELL'AUDIO
     setupMuteButtonListener() {
         if (!this.elements.muteButton) return;
         this.elements.muteButton.addEventListener('click', () => {
@@ -149,39 +169,89 @@ const UI = {
         });
     },
 
-    // Interactive compas widget for direction 
+    /*
+    a funzione setupCompassListener() ha il compito di mettere in comunicazione l'interfaccia utente bidimensionale (la bussola bidimensionale dell'HUD) con lo spazio tridimensionale della simulazione di Three.js.
+    Permette all'utente di cliccare e trascinare la freccia della bussola per orientare il vettore globale del vento. Di seguito viene proposta un'analisi dettagliata del suo funzionamento, suddivisa per aree tematiche: logica di trascinamento, calcoli trigonometrici e sincronizzazione con la scheda video (GPU).
+    */
+
+    // Interactive compas widget for direction STUDIARE QUI TUTTA LA ROBA LEGATA A ALGEBRA LINEARE, RADIANTI ECC... CIOE STUDIA TUTTA LA FUNZIOEN
     setupCompassListener() {
         if (!this.elements.compass || !this.elements.pointer) return;
 
         let isDraggingCompass = false;
 
+        /*
+        l primo blocco della funzione interna updateCompassDirection(e) serve a determinare dove si trovi il cursore 
+        (o il dito, su dispositivi touch) rispetto al centro esatto della bussola:
+        */
         const updateCompassDirection = (e) => {
-            const rect = this.elements.compass.getBoundingClientRect();
+            const rect = this.elements.compass.getBoundingClientRect(); //getBoundingClientRect() restituisce le dimensioni e la posizione assoluta dell'elemento HTML della bussola rispetto alla finestra del browser (viewport).
+            //centerX e centerY individuano il punto centrale esatto (il fulcro della freccia) in coordinate pixel dello schermo.
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
 
+            //Successivamente, il codice normalizza l'evento di input per supportare sia i dispositivi desktop (mouse) che quelli mobili (touch screen):
+            /*
+            Se l'evento contiene un array touches, significa che l'utente sta usando un touch screen,
+            quindi viene estratta la coordinata del primo punto di contatto (e.touches[0]). 
+            Altrimenti, viene usata la coordinata del mouse e.clientX/e.clientY.
+            */
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             const clientY = e.clientY || (e.touches && e.touches[0].clientY);
 
+            //Infine, si calcola la distanza relativa del cursore rispetto al centro della bussola sulle due direzioni cartesiane:
+            //cioe si calcola deltax e deltay
             const dx = clientX - centerX;
             const dy = clientY - centerY;
 
+            //Una volta ottenuti i segmenti ovvero deltax e deltay, il codice determina l'angolo di rotazione:
+
+            //Math.atan2(dy, dx): Questa funzione trigonometrica calcola l'arcotangente delle due coordinate,
+            //restituendo l'angolo in radianti nell'intervallo [−π,π][−π,π]. 
+            //Rispetto a Math.atan(), atan2 gestisce automaticamente il segno di entrambi gli argomenti, 
+            //evitando problemi di divisione per zero quando l'utente si trova esattamente sull'asse verticale.
             let angleRad = Math.atan2(dy, dx);
+
+            //Conversione in gradi: I radianti vengono convertiti in gradi moltiplicando per 180/π
+            //In trigonometria standard, l'angolo di 0  radianti(o gradi) si sviluppa lungo l'asse X positivo (quindi verso destra, corrispondente all'Est).
+            //Nelle bussole visive, tuttavia, il Nord è posizionato in alto.Nello spazio dello schermo del browser, 
+            //inoltre, l'asse Y è invertito (valori crescenti verso il basso). Aggiungendo + 90 gradi, si ruota l'asse di riferimento in modo 
+            //che il puntatore sia orientato verso l'alto(Nord) quando l'angolo calcolato è pari a zero.
             let angleDeg = angleRad * (180 / Math.PI) + 90; // the north aligns up
 
-            STATE.windDirection = angleDeg;
-            this.elements.pointer.style.transform = `rotate(${angleDeg}deg)`;
+            //Una volta ricavato l'angolo corretto, il codice aggiorna l'interfaccia utente e lo stato dell'applicazione:
+            STATE.windDirection = angleDeg; //Memorizza il valore in gradi nell'oggetto di stato globale STATE.windDirection.
+            this.elements.pointer.style.transform = `rotate(${angleDeg}deg)`; //Applica una rotazione CSS all'elemento della freccia (pointer) per riflettere istantaneamente l'interazione dell'utente sulla bussola dell'interfaccia.
 
+
+            //Il vento nel motore 3D non è definito da un angolo, ma da un vettore tridimensionale unitario di direzione (windVectorGlobal)
+            //che giace sul piano orizzontale XZ (dove Y rappresenta l'altezza, che per il vento standard è 0  ).
+
+            //Prima di riconvertire in radianti, si rimuove l'offset visivo di 90 gradi precedentemente aggiunto per la bussola HTML,
+            //riportando l'angolo nel sistema trigonometrico standard di Three.js.
+            //Costruzione del Vettore: Viene configurato il vettore con coordinate:
+            //X=cos(rad)
+            //Y=0 (il vento soffia parallelamente al terreno)
+            //Z=sin(rad)
             const rad = (angleDeg - 90) * (Math.PI / 180);
             if (typeof windVectorGlobal !== 'undefined') {
+                //Riduce la lunghezza del vettore a 1(vettore unitario).Questo garantisce che il vettore indichi unicamente la direzione, evitando che la distanza del cursore dal centro della bussola influenzi l'intensità del vento.
                 windVectorGlobal.set(Math.cos(rad), 0, Math.sin(rad)).normalize();
             }
 
+            //Per evitare di ricalcolare le geometrie o ricreare i materiali ad ogni movimento del mouse (operazione che causerebbe vistosi cali di frame rate), il codice invia il nuovo vettore direttamente alla GPU tramite le uniforms dello shader dell'erba:
             if (typeof grassMesh !== 'undefined' && grassMesh && grassMesh.material && windVectorGlobal) {
+                //La proprietà userData.uWindDirection.value è referenziata all'interno del vertex shader customizzato dell'erba.
+                //Copiando il vettore in questa posizione della memoria, la scheda video aggiorna la direzione di piegamento dei 25.000 fili d'erba nel frame successivo in modo diretto e performante.
                 grassMesh.material.userData.uWindDirection.value.copy(windVectorGlobal);
             }
         };
 
+        //Il resto del metodo si occupa di registrare i listener per mouse e touch. Un dettaglio importante riguarda la scelta dei target per i vari eventi:
+
+        //mousedown / touchstart sulla bussola: Il trascinamento inizia solo se l'utente clicca direttamente sull'elemento della bussola.
+        //mousemove / touchmove sulla finestra (window): Questa è una scelta di progettazione mirata a migliorare l'esperienza d'uso (User Experience). Registrando il movimento sull'intero documento (window) anziché sul piccolo cerchio della bussola, l'interazione non si interrompe se l'utente sposta velocemente il mouse fuori dai confini fisici della bussola mentre tiene premuto il tasto.
+        //mouseup / touchendsulla finestra(window): Garantisce che lo stato di trascinamento si disattivi(isDraggingCompass = false) ovunque l'utente rilasci il click o sollevi il dito dallo schermo.
         this.elements.compass.addEventListener('mousedown', (e) => {
             isDraggingCompass = true;
             updateCompassDirection(e);
@@ -210,7 +280,7 @@ const UI = {
         });
     },
 
-    // time of day slider
+    // time of day slider SLIDER DELLO SCORRERE DEL TEMPO
     setupTimeOfDayListener() {
         if (!this.elements.timeSlider) return;
 
@@ -226,7 +296,7 @@ const UI = {
         }
     },
 
-    // camera view controls
+    // camera view controls BOTTONI DELLE CAMERE
     setupCameraButtonsListener() {
         const camButtons = {
             'cam-orbit': 'orbit',
@@ -254,7 +324,7 @@ const UI = {
         });
     },
 
-    // toggle visibility of spline helper path
+    // toggle visibility of spline helper path  //bottone per dire se è isibile la spline
     setupSplineVisibilityListener() {
         if (!this.elements.splineCheck) return;
 
@@ -267,7 +337,7 @@ const UI = {
         });
     },
 
-    // wind vector checkbox
+    // wind vector checkbox //bottone per dire se è isibile il campo vettoriale
     setupWindVectorsListener() {
         if (!this.elements.windVectorsCheck) return;
 
@@ -278,7 +348,7 @@ const UI = {
         });
     },
 
-    // wind influence radius threshold slider
+    // wind influence radius threshold slider  //SLIDER PER INDICARE LO SLIDER DELLA THRESHOLD
     setupThresholdListener() {
         if (!this.elements.thresholdSlider) return;
 
